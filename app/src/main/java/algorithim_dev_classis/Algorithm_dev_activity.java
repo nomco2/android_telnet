@@ -2,7 +2,10 @@ package algorithim_dev_classis;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,8 @@ import android.widget.RelativeLayout;
 
 import com.example.kimfamily.arduino_car_nodemcu.R;
 import movable_classis.Movable_Layout_Class;
+import movable_classis.Movable_Layout_Class_auto_lineup;
+
 /**
  * Created by KimFamily on 2017-10-25.
  */
@@ -29,6 +34,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     private int creating_button_id_number = 100;
     private int[][][] id_numbering_location;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,18 +44,68 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
         id_numbering_location = new int[20][100][2]; //[id번호], [그 번호에 생성된 번호 개수], [x,y주소]
-        for(int i = 1; i < 7; i++){
-            LinearLayout new_Linear_layout = button_creating_method(i, 10, i*120, false);
-            id_numbering_location[i][0][0] = (int) new_Linear_layout.getX();
-            id_numbering_location[i][0][1] = (int) new_Linear_layout.getY();
+
+        /* 기본 고정된 기능 들 배치 시키기 */
+        for(int i = 0; i < 7; i++){
+//            LinearLayout new_Linear_layout = button_creating_method(i+0, 10, i*100, true);
+//            id_numbering_location[i][0][0] = (int) new_Linear_layout.getX();
+//            id_numbering_location[i][0][1] = (int) new_Linear_layout.getY();
+            id_numbering_location[i][0][1] = i+100;
 
         }
 
-
-
-
-
+        Auto_lineup_and_dont_overaping auto_lineup_and_dont_overaping = new Auto_lineup_and_dont_overaping();
+        auto_lineup_and_dont_overaping.setDaemon(true);
+        auto_lineup_and_dont_overaping.start();
     }
+
+    /***************oncreate 끝 ********************/
+
+
+    class Auto_lineup_and_dont_overaping extends Thread{
+        @Override
+        public void run() {
+            int[] find_arrayment_by_location_y = new int[2000];
+            for(int i=0; i<20; i++){
+                for(int j=0; j<100; j++){
+                    if(id_numbering_location[i][j][1] > 10){ //빈값이 아니고
+                        /* i+j는 button_creating_method로 동적으로 만들때 부여하는 id 번호
+                         * 그래서 find_arrayment_by_location_y배열 1번은 y위치가 100인 레이아웃 id를 넣음
+                         * 최종적으로 find_arrayment_by_location_y에 y순서에 따라 id를 넣어놓음
+                         */
+                        find_arrayment_by_location_y[id_numbering_location[i][j][1]/100] = i+j;
+                        /* 불러온 id_numbering_location 값을
+                         * button_creating_method로 배치
+                         */
+                        LinearLayout new_Linear_layout = button_creating_method(i+j, 10, id_numbering_location[i][j][1], true);
+                    }
+                }
+            }
+
+            while(!this.isInterrupted()) {
+                //사용자가 새로운 레이아웃을 끌어댕길때 y값을 잡아서 사이에 넣을수 있도록 해주는 쓰레드
+
+
+            }
+
+        }
+    }
+
+
+    Handler Auto_lineup_and_dont_overaping_handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 100:
+                    break;
+            }
+        }
+    };
+
+
+
+
+
 
     @Override
     public void onClick(View view) {
@@ -89,8 +145,6 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         select_background_img(new_buttons, this_layout_id_number); //백그라운드 레이아웃 id 번호에 따라서 알아서 배치
         new_buttons.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 //            new_buttons.setOnClickListener(new_creation_buttons);
-        new_buttons.setScaleX(0.5f);
-        new_buttons.setScaleY(0.5f);
 
 //            TextView new_texts = new TextView(getApplicationContext());
 //            new_texts.setId(creating_button_number + 2);
@@ -102,6 +156,8 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         new_linear.setLayoutParams(params);
 
 
+
+
 //            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(new_buttons.getWidth(), new_buttons.getHeight());
 //            new_frames.setLayoutParams(params);
 
@@ -111,8 +167,10 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         new_buttons_location[1] = "new_button_y" + this_layout_id_number;
         String scale_size = "scale_size" + this_layout_id_number;
 //            String new_button_scale = "new_button_scale" + creating_button_number;
-        Movable_Layout_Class new_movable_button =  new Movable_Layout_Class(getApplicationContext(), dev_layout_main, new_linear, new_buttons_location, scale_size, moving_hold_permanently);
+        Movable_Layout_Class_auto_lineup new_movable_button =
+                new Movable_Layout_Class_auto_lineup(getApplicationContext(), dev_layout_main, new_linear, new_buttons_location, scale_size, moving_hold_permanently);
 
+        new_movable_button.Scale_size_adjustment(0.5f);
 
         new_linear.addView(new_buttons);
 //            new_linear.addView(new_texts);
@@ -161,6 +219,11 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         }
 
     }
+
+
+
+
+
 
 
 

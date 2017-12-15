@@ -22,4 +22,10 @@
         android:id="@+id/telnet_btn"
         android:text="telnet"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/argorithm_dev"
+        android:text="argorithm_dev"/>
+
 </android.support.constraint.ConstraintLayout>

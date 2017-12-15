@@ -16,7 +16,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Main_activiy">
+        <activity
+            android:name=".Main_activiy"
+            android:screenOrientation="landscape">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,15 +30,20 @@
 
         <activity
             android:name="telnet.MainActivity"
-            android:screenOrientation="sensorPortrait"
+            android:screenOrientation="landscape"
             android:label="@string/app_name" >
         </activity>
         <activity
             android:name="telnet.SettingsActivity"
-            android:screenOrientation="sensorPortrait"
+            android:screenOrientation="landscape"
             android:label="@string/title_activity_settings" >
         </activity>
 
+        <activity
+            android:name="algorithim_dev_classis.Algorithm_dev_activity"
+            android:screenOrientation="landscape"
+            android:label="@string/title_activity_settings" >
+        </activity>
 
 
     </application>

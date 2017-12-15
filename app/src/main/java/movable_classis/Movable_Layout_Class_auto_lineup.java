@@ -10,11 +10,13 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import static java.lang.Math.round;
+
 /**
  * Created by IGSksh on 2017-07-29.
  */
 
-public class Movable_Layout_Class {
+public class Movable_Layout_Class_auto_lineup {
     public int xDelta;
     public int yDelta;
     private ViewGroup mainLayout;
@@ -44,7 +46,7 @@ public class Movable_Layout_Class {
      * @param you_want_moving_layout [ViewGroup] you want moving layout
      * @param location_xy [String[]] to save the "you_want_moving_layout" of location x, y
      */
-    public Movable_Layout_Class(Context from_mainAcviticy_context, ViewGroup form_mainAcitiviy_Layout, ViewGroup you_want_moving_layout, String[] location_xy){
+    public Movable_Layout_Class_auto_lineup(Context from_mainAcviticy_context, ViewGroup form_mainAcitiviy_Layout, ViewGroup you_want_moving_layout, String[] location_xy){
         mainactivity_context = from_mainAcviticy_context;
         mainLayout = form_mainAcitiviy_Layout;
         mframe = you_want_moving_layout;
@@ -74,8 +76,8 @@ public class Movable_Layout_Class {
      * @param location_xy [String[]] to save the "you_want_moving_layout" of location x, y
      * @param scale_value_name the layout scale size value name : String
      */
-    public Movable_Layout_Class(Context from_mainAcviticy_context, ViewGroup form_mainAcitiviy_Layout, ViewGroup you_want_moving_layout,
-                                String[] location_xy, String scale_value_name, Boolean moving_hold_permanently){
+    public Movable_Layout_Class_auto_lineup(Context from_mainAcviticy_context, ViewGroup form_mainAcitiviy_Layout, ViewGroup you_want_moving_layout,
+                                            String[] location_xy, String scale_value_name, Boolean moving_hold_permanently){
         mainactivity_context = from_mainAcviticy_context;
         mainLayout = form_mainAcitiviy_Layout;
         mframe = you_want_moving_layout;
@@ -158,6 +160,18 @@ public class Movable_Layout_Class {
                             location_xy_editor.putFloat(mloaction_xy[0], mframe.getX());
                             location_xy_editor.putFloat(mloaction_xy[1], mframe.getY());
                             location_xy_editor.commit();
+
+
+
+                            RelativeLayout.LayoutParams layoutParams1 = (RelativeLayout.LayoutParams) view
+                                    .getLayoutParams();
+//                            layoutParams1.leftMargin = round(x/100)*100 - xDelta;
+                            layoutParams1.leftMargin = 30;
+                            layoutParams1.topMargin = round(y/100)*100 - yDelta;
+                            layoutParams1.rightMargin = 0;
+                            layoutParams1.bottomMargin = 0;
+                            view.setLayoutParams(layoutParams1);
+
 
 
                             break;
