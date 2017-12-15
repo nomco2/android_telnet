@@ -1,11 +1,17 @@
 package algorithim_dev_classis;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ScrollingView;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +19,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.Toast;
 
 import com.example.kimfamily.arduino_car_nodemcu.R;
 import movable_classis.Movable_Layout_Class;
@@ -32,7 +40,13 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
     private RelativeLayout dev_layout_main;
     private int creating_button_id_number = 100;
-    private int[][][] id_numbering_location;
+    private int[] id_numbering;
+    private int[][] id_numbering_location;
+    private int[][] previous_next_operation;
+    private ScrollView scrollview1;
+    private ImageView scroll_handle;
+    private int previous_scroll_value;
+
 
 
     @Override
@@ -42,18 +56,37 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
         dev_layout_main = (RelativeLayout) findViewById(R.id.dev_layout_main);
 
+        scrollview1 = (ScrollView) findViewById(R.id.scrollview1);
 
-        id_numbering_location = new int[20][100][2]; //[id번호], [그 번호에 생성된 번호 개수], [x,y주소]
+        id_numbering = new int[2000];
+        id_numbering_location = new int[2000][2]; //[id번호], [x,y주소]
+        previous_next_operation = new int[2000][2]; //[id번호], [앞에 붙은것/뒤에 붙은것]
+        /* id 번호 구분법
+         *  새로 생성되는 것은 id가 +100씩 추가된다
+         *  0 : 시작 지점, 1 : 모터1 속도, 2: 모터 2속도,3:모터 2개 멈추기, 4: 서보모터 각도, 5:거리측정값, 6:지연시간
+         */
 
         /* 기본 고정된 기능 들 배치 시키기 */
         for(int i = 0; i < 7; i++){
-//            LinearLayout new_Linear_layout = button_creating_method(i+0, 10, i*100, true);
-//            id_numbering_location[i][0][0] = (int) new_Linear_layout.getX();
-//            id_numbering_location[i][0][1] = (int) new_Linear_layout.getY();
-            id_numbering_location[i][0][1] = i+100;
-
+            LinearLayout new_Linear_layout = button_creating_method(i, 300, i*100, false);
         }
 
+        //테스트용 db
+        for(int i=0; i<7; i++){
+            id_numbering[i] = (i+1)*100 +i+1;
+            id_numbering_location[i][0] = 10;
+            id_numbering_location[i][1] = i*100;
+        }
+
+
+        /* 데이터 불러와서 배치하기 */
+        for(int i = 0; i < 7; i++){
+            LinearLayout new_Linear_layout = button_creating_method(id_numbering[i], id_numbering_location[i][0], id_numbering_location[i][1], true);
+        }
+
+
+
+        /*쓰레드*/
         Auto_lineup_and_dont_overaping auto_lineup_and_dont_overaping = new Auto_lineup_and_dont_overaping();
         auto_lineup_and_dont_overaping.setDaemon(true);
         auto_lineup_and_dont_overaping.start();
@@ -65,25 +98,33 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     class Auto_lineup_and_dont_overaping extends Thread{
         @Override
         public void run() {
-            int[] find_arrayment_by_location_y = new int[2000];
-            for(int i=0; i<20; i++){
-                for(int j=0; j<100; j++){
-                    if(id_numbering_location[i][j][1] > 10){ //빈값이 아니고
-                        /* i+j는 button_creating_method로 동적으로 만들때 부여하는 id 번호
-                         * 그래서 find_arrayment_by_location_y배열 1번은 y위치가 100인 레이아웃 id를 넣음
-                         * 최종적으로 find_arrayment_by_location_y에 y순서에 따라 id를 넣어놓음
-                         */
-                        find_arrayment_by_location_y[id_numbering_location[i][j][1]/100] = i+j;
-                        /* 불러온 id_numbering_location 값을
-                         * button_creating_method로 배치
-                         */
-                        LinearLayout new_Linear_layout = button_creating_method(i+j, 10, id_numbering_location[i][j][1], true);
-                    }
-                }
-            }
+//            int[] find_arrayment_by_location_y = new int[2000];
+//            for(int i=0; i<20; i++){
+//                for(int j=0; j<100; j++){
+//                    if(id_numbering_location[i][j][1] > 10){ //빈값이 아니고
+//                        /* i+j는 button_creating_method로 동적으로 만들때 부여하는 id 번호
+//                         * 그래서 find_arrayment_by_location_y배열 1번은 y위치가 100인 레이아웃 id를 넣음
+//                         * 최종적으로 find_arrayment_by_location_y에 y순서에 따라 id를 넣어놓음
+//                         */
+//                        find_arrayment_by_location_y[id_numbering_location[i][j][1]/100] = i+j;
+//                        /* 불러온 id_numbering_location 값을
+//                         * button_creating_method로 배치
+//                         */
+//                        LinearLayout new_Linear_layout = button_creating_method(i+j, 10, id_numbering_location[i][j][1], true);
+//                    }
+//                }
+//            }
 
             while(!this.isInterrupted()) {
-                //사용자가 새로운 레이아웃을 끌어댕길때 y값을 잡아서 사이에 넣을수 있도록 해주는 쓰레드
+
+                /* 스크롤 이동할때 */
+                if(previous_scroll_value != scrollview1.getScrollY()){
+                    Message msg =  Auto_lineup_and_dont_overaping_handler.obtainMessage();
+                    msg.what =100;
+                    Auto_lineup_and_dont_overaping_handler.sendMessage(msg);
+                    previous_scroll_value = scrollview1.getScrollY();
+                }
+
 
 
             }
@@ -96,11 +137,27 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case 100:
-                    break;
+                case 100: //스크롤 이동
+//                    Toast.makeText(getApplicationContext(),scrollview1.getScrollY()+"",Toast.LENGTH_SHORT).show();
+                    for(int i=0; i<7; i++) {
+                        ViewGroup linerlayout1 = (ViewGroup) findViewById(i);
+                        try {
+                            linerlayout1.setY(id_numbering_location[i][1] - convertPixelsToDp(scrollview1.getScrollY(), getApplicationContext()));
+                        }catch (Exception e){
+
+                        }
+                    }
+                break;
             }
         }
     };
+
+    public static float convertPixelsToDp(float px, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float dp = px / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return dp;
+    }
 
 
 
@@ -167,8 +224,8 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         new_buttons_location[1] = "new_button_y" + this_layout_id_number;
         String scale_size = "scale_size" + this_layout_id_number;
 //            String new_button_scale = "new_button_scale" + creating_button_number;
-        Movable_Layout_Class_auto_lineup new_movable_button =
-                new Movable_Layout_Class_auto_lineup(getApplicationContext(), dev_layout_main, new_linear, new_buttons_location, scale_size, moving_hold_permanently);
+        Movable_Layout_Class new_movable_button =
+                new Movable_Layout_Class(getApplicationContext(), dev_layout_main, new_linear, new_buttons_location, scale_size, moving_hold_permanently);
 
         new_movable_button.Scale_size_adjustment(0.5f);
 
