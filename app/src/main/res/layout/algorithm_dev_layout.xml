@@ -135,17 +135,18 @@
         <!-- 코딩 스케치 하는  부분 -->
 
         <LinearLayout
+            android:id="@+id/first_line"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:background="#7FFFD4"
             android:layout_weight="0.7">
 
             <ImageView
-                android:id="@+id/scroll_handle"
                 android:layout_width="match_parent"
-                android:layout_height="1000dp"
-                android:background="@drawable/operation_tray"/>
+                android:layout_height="50dp"
+                android:src="@drawable/line_image"
+                android:text="기능 배치 영역"
+                android:background="#EEEEFF"/>
 
         </LinearLayout>
 
