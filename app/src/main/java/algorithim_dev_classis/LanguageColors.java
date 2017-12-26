@@ -25,8 +25,8 @@ public class LanguageColors {
         colorMap.put("ruby", "#701516");
         colorMap.put("c", "#555555");
 
-        colorMap.put("nomal0", "#EEFFEE");
-        colorMap.put("nomal1", "#DDFFDD");
+        colorMap.put("nomal0", "#777777");
+        colorMap.put("nomal1", "#444444");
         colorMap.put("nomal2", "#CCFFCC");
         colorMap.put("if", "#FFCCCC");
         colorMap.put("for", "#CCCCFF");

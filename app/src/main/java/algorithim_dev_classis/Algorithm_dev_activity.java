@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kimfamily.arduino_car_nodemcu.Main_activiy;
@@ -47,7 +48,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     private RelativeLayout dev_layout_main;
     private int creating_button_id_number = 100;
     private int[][] DB_buttons;
-
+    public int[] algorithm_continuous;
 
     private ScrollView scrollview1;
     private LinearLayout first_line;
@@ -56,10 +57,31 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     LanguageColors languageColors;
 
 
+    DisplayMetrics dm;
+    int display_width;
+    int display_height;
+    int screenSizeType;
+    int resourceId;
+
+    public int[] first_line_getY;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.algorithm_dev_layout);
+
+
+        dm = getApplicationContext().getResources().getDisplayMetrics();
+        display_width = dm.widthPixels;
+        display_height = dm.heightPixels;
+        screenSizeType = (getApplicationContext().getResources().getConfiguration().screenLayout &
+                Configuration.SCREENLAYOUT_SIZE_MASK);
+        resourceId = getApplicationContext().getResources().getIdentifier("status_bar_height", "dimen", "android");
+
+
+
 
         dev_layout_main = (RelativeLayout) findViewById(R.id.dev_layout_main);
 
@@ -69,22 +91,37 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         /* 배경 줄 넣기         */
         languageColors =  new LanguageColors();
         for(int i =0; i<20 ; i++){
-            final ImageView new_line = new ImageView(getApplicationContext());
+            LinearLayout new_linear = new LinearLayout(getApplicationContext());
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 200);
+            params.gravity = Gravity.CENTER;
+            new_linear.setOrientation(LinearLayout.HORIZONTAL);
+            new_linear.setLayoutParams(params);
+
+            ImageView new_line = new ImageView(getApplicationContext());
             new_line.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100));
             new_line.setImageDrawable(getResources().getDrawable(R.drawable.line_image));
             new_line.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.myshape));
             new_line.setId(90000 + i);
-
+            final int temp_i = i;
             new_line.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getApplicationContext(),new_line.getY()+ " : " + scrollview1.getScrollY()+"", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),temp_i+"", Toast.LENGTH_SHORT).show();
                 }
             });
 
+
+            TextView line_number = new TextView(getApplicationContext());
+            line_number.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            line_number.setText(i+"");
+
+//            new_linear.addView(line_number);
+//            new_linear.addView(new_line);
+
+
             first_line.addView(new_line);
             GradientDrawable bgShape = (GradientDrawable) new_line.getBackground();
-            String selectedLanguage = "nomal" + i%3;
+            String selectedLanguage = "nomal" + i%2;
             bgShape.setColor(languageColors.getColor(selectedLanguage));
 
         }
@@ -94,7 +131,8 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
         DB_buttons = new int[4000][6];
-
+        algorithm_continuous = new int[8000];
+        first_line_getY = new int[1];
 
         /* 기본 고정된 기능 들 배치 시키기 */
         for(int i = 0; i < 7; i++){
@@ -121,38 +159,39 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
         /* 데이터 불러와서 배치하기 */
         for(int i = 10; i < 17; i++){
-            DB_buttons[i][0] = 1; //버튼 종류
+            DB_buttons[i][0] = (i+1)%10; //버튼 종류
             DB_buttons[i][1] = i+1; //다음 연속된 버튼 id
             DB_buttons[i][2] = 10; //x위치
             DB_buttons[i][3] = i*100; //y위치
 
-            final LinearLayout new_Linear_layout = button_creating_method(i, DB_buttons[i][0], DB_buttons[i][2], DB_buttons[i][3], true);
-            final int temp = DB_buttons[i][1];
-            new_Linear_layout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(getApplicationContext(),temp+"", Toast.LENGTH_LONG).show();
-                }
-            });
+            LinearLayout new_Linear_layout = button_creating_method(i, DB_buttons[i][0], DB_buttons[i][2], DB_buttons[i][3], true);
+            algorithm_continuous[i-10] = i; //알고리즘 순서
+            Log.i("algorithm_continuous "+(i-10), i+"");
         }
         DB_buttons[0][0] = 1;
         DB_buttons[0][1] = 10;
         DB_buttons[0][2] = 10;
         DB_buttons[0][3] = 100;
-        LinearLayout new_Linear_layout = button_creating_method(0, DB_buttons[0][0], DB_buttons[0][2], DB_buttons[0][3], true);
-        final int temp = DB_buttons[0][1];
-        new_Linear_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),temp+"", Toast.LENGTH_LONG).show();
-            }
-        });
+//        LinearLayout new_Linear_layout = button_creating_method(0, DB_buttons[0][0], DB_buttons[0][2], DB_buttons[0][3], true);
+//        final int temp = DB_buttons[0][1];
+//        new_Linear_layout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(getApplicationContext(),temp+"", Toast.LENGTH_LONG).show();
+//            }
+//        });
+        auto_lining();
+
+
 
 
         /*쓰레드*/
         Auto_lineup_and_dont_overaping auto_lineup_and_dont_overaping = new Auto_lineup_and_dont_overaping();
         auto_lineup_and_dont_overaping.setDaemon(true);
         auto_lineup_and_dont_overaping.start();
+
+
+
     }
 
     /***************oncreate 끝 ********************/
@@ -161,22 +200,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     class Auto_lineup_and_dont_overaping extends Thread{
         @Override
         public void run() {
-//            int[] find_arrayment_by_location_y = new int[2000];
-//            for(int i=0; i<20; i++){
-//                for(int j=0; j<100; j++){
-//                    if(id_numbering_location[i][j][1] > 10){ //빈값이 아니고
-//                        /* i+j는 button_creating_method로 동적으로 만들때 부여하는 id 번호
-//                         * 그래서 find_arrayment_by_location_y배열 1번은 y위치가 100인 레이아웃 id를 넣음
-//                         * 최종적으로 find_arrayment_by_location_y에 y순서에 따라 id를 넣어놓음
-//                         */
-//                        find_arrayment_by_location_y[id_numbering_location[i][j][1]/100] = i+j;
-//                        /* 불러온 id_numbering_location 값을
-//                         * button_creating_method로 배치
-//                         */
-//                        LinearLayout new_Linear_layout = button_creating_method(i+j, 10, id_numbering_location[i][j][1], true);
-//                    }
-//                }
-//            }
+
 
             while(!this.isInterrupted()) {
 
@@ -187,6 +211,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                     Auto_lineup_and_dont_overaping_handler.sendMessage(msg);
                     previous_scroll_value = scrollview1.getScrollY();
                 }
+
 
 
 
@@ -202,39 +227,18 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
             switch (msg.what) {
                 case 100: //스크롤 이동
 //                    Toast.makeText(getApplicationContext(),scrollview1.getScrollY()+"",Toast.LENGTH_SHORT).show();
-                    DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
-                    int display_width = dm.widthPixels;
-                    int display_height = dm.heightPixels;
-
-                    ViewGroup linerlayout1 = findViewById(0); //시작되는 레이아웃 id = 0
-                    try {
-                        linerlayout1.setY(display_height - getStatusBarHeight() - DB_buttons[0][3] - scrollview1.getScrollY());
-                    }catch(Exception e){
-
-                    }
-                    layout_placement_by_next_id(DB_buttons[0][1], 10, 100);
-//                        try {
-//                            if(DB_buttons[i][1] >1) { //이전 값이 있으면
-//                                ViewGroup previous_layout = findViewById(DB_buttons[i][1]);
-////                                linerlayout1.setY(previous_location[i][1] + previous_layout.getHeight() - convertPixelsToDp(scrollview1.getScrollY(), getApplicationContext()));
-////                                linerlayout1.setY((float) (new_line.getY() - scrollview1.getScrollY()));
-//                                linerlayout1.setY((float) (display_height-getStatusBarHeight() - previous_location[i][1] - scrollview1.getScrollY()));
+//                    DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+//                    int display_width = dm.widthPixels;
+//                    int display_height = dm.heightPixels;
 //
+//                    ViewGroup linerlayout1 = findViewById(0); //시작되는 레이아웃 id = 0
+//                    try {
+//                        linerlayout1.setY(display_height - getStatusBarHeight() - scrollview1.getScrollY());
+//                    }catch(Exception e){
 //
-////                                Log.i("이전y", previous_layout.getY()+"");
-////                                Log.i("이전 높이", previous_layout.getHeight()+"");
-////                                Log.i("set y", previous_layout.getY() + convertPixelsToDp(previous_layout.getHeight(),getApplicationContext()) - convertPixelsToDp(scrollview1.getScrollY(), getApplicationContext())+"");
-//                                Log.i(" pre id num : ",id_previous_next_operation[i][0]+" height = "+ previous_layout.getHeight());
-//                            }else{ //이전 값이 없으면
-//                                linerlayout1.setY(id_numbering_location[i][1] - convertPixelsToDp(scrollview1.getScrollY(), getApplicationContext()));
-////                                linerlayout1.setVisibility(View.INVISIBLE);
-//                                Log.i(" first : ",i+"");
-//                            }
-//
-//                        }catch (Exception e){
-//
-//                        }
-
+//                    }
+//                    layout_placement_by_next_id(DB_buttons[0][1], 10, display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY());
+                    auto_lining();
                 break;
             }
         }
@@ -258,11 +262,9 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     private int getStatusBarHeight(){
 
         int statusHeight = 0;
-        int screenSizeType = (getApplicationContext().getResources().getConfiguration().screenLayout &
-                Configuration.SCREENLAYOUT_SIZE_MASK);
+
 
         if(screenSizeType != Configuration.SCREENLAYOUT_SIZE_XLARGE) {
-            int resourceId = getApplicationContext().getResources().getIdentifier("status_bar_height", "dimen", "android");
 
             if (resourceId > 0) {
                 statusHeight = getApplicationContext().getResources().getDimensionPixelSize(resourceId);
@@ -271,6 +273,14 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
         return statusHeight;
     }
+
+
+    private void auto_lining(){
+        first_line_getY[0] = display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY();
+        layout_placement_by_next_id(DB_buttons[0][1], 10, display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY());
+        Log.i("first_line_getY", first_line_getY+"");
+    }
+
 
     private boolean layout_placement_by_next_id(int next_id_number, int pre_layout_x, int pre_layout_y){
         Log.i("db buttons : ", next_id_number +"");
@@ -288,6 +298,10 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         }catch (Exception e){
             return false;
         }
+    }
+
+    public int return_first_line_current_location(){ //첫번째 시작 버튼의 위치를 알려줘서 무버블클래스에서 지금 드래그 하는 위치가 어디어 속하는지 찾아봄
+        return display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY();
     }
 
 
@@ -338,7 +352,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 //            new_texts.setId(creating_button_number + 2);
 //            new_texts.setText("이동 손잡이");
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 200);
         params.gravity = Gravity.CENTER;
         new_linear.setOrientation(LinearLayout.VERTICAL);
         new_linear.setLayoutParams(params);
@@ -355,8 +369,10 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         new_buttons_location[1] = "new_button_y" + this_layout_id_number;
         String scale_size = "scale_size" + this_layout_id_number;
 //            String new_button_scale = "new_button_scale" + creating_button_number;
-        Movable_Layout_Class new_movable_button =
-                new Movable_Layout_Class(getApplicationContext(), dev_layout_main, new_linear, new_buttons_location, scale_size, moving_hold_permanently);
+        Movable_Layout_Class_auto_lineup new_movable_button =
+                new Movable_Layout_Class_auto_lineup(
+                        getApplicationContext(), dev_layout_main, new_linear, new_buttons_location, scale_size, moving_hold_permanently,
+                        this_layout_id_number, algorithm_continuous, first_line_getY);
 
         new_movable_button.Scale_size_adjustment(0.5f);
 
@@ -365,6 +381,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         dev_layout_main.addView(new_linear);
         new_linear.setX(location_x);
         new_linear.setY(location_y);
+
 
         return new_linear;
     }
@@ -407,6 +424,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         }
 
     }
+
 
 
 

@@ -4,11 +4,14 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import algorithim_dev_classis.Algorithm_dev_activity;
 
 import static java.lang.Math.round;
 
@@ -35,6 +38,11 @@ public class Movable_Layout_Class_auto_lineup {
     String present_scale_value_name;
 
 
+    Algorithm_dev_activity algorithm_dev_activity;
+    private int this_layout_id;
+    private int[] algorithm_array_copy;
+
+    public int[] first_line_getY;
 
 
 
@@ -64,6 +72,8 @@ public class Movable_Layout_Class_auto_lineup {
 
         mframe.setOnTouchListener(onTouchListener());
 
+        algorithm_dev_activity = new Algorithm_dev_activity();
+
 
     }
 
@@ -77,7 +87,8 @@ public class Movable_Layout_Class_auto_lineup {
      * @param scale_value_name the layout scale size value name : String
      */
     public Movable_Layout_Class_auto_lineup(Context from_mainAcviticy_context, ViewGroup form_mainAcitiviy_Layout, ViewGroup you_want_moving_layout,
-                                            String[] location_xy, String scale_value_name, Boolean moving_hold_permanently){
+                                            String[] location_xy, String scale_value_name, Boolean moving_hold_permanently, int layout_id, int[] algorithm_continuous,
+                                            int[] first_line_location){
         mainactivity_context = from_mainAcviticy_context;
         mainLayout = form_mainAcitiviy_Layout;
         mframe = you_want_moving_layout;
@@ -96,6 +107,12 @@ public class Movable_Layout_Class_auto_lineup {
         mframe.setScaleY(location_savaer.getFloat(present_scale_value_name, 1.0f));
 
         mframe.setOnTouchListener(onTouchListener());
+
+        algorithm_dev_activity = new Algorithm_dev_activity();
+        this_layout_id = layout_id;
+        algorithm_array_copy = algorithm_continuous;
+        first_line_getY = first_line_location;
+
     }
 
 
@@ -162,15 +179,26 @@ public class Movable_Layout_Class_auto_lineup {
                             location_xy_editor.commit();
 
 
+                            for(int i = 100; i < 2000; i+=100){
+                                if(view.getY() > i-200 && view.getY() < i-100){
+                                    algorithm_array_copy[i] = this_layout_id;
+                                    Log.i("algroithm save", -first_line_getY[0] + ", "+ i + " : " + this_layout_id);
+                                }
+                            }
 
-                            RelativeLayout.LayoutParams layoutParams1 = (RelativeLayout.LayoutParams) view
-                                    .getLayoutParams();
-//                            layoutParams1.leftMargin = round(x/100)*100 - xDelta;
-                            layoutParams1.leftMargin = 30;
-                            layoutParams1.topMargin = round(y/100)*100 - yDelta;
-                            layoutParams1.rightMargin = 0;
-                            layoutParams1.bottomMargin = 0;
-                            view.setLayoutParams(layoutParams1);
+
+
+
+
+
+//                            RelativeLayout.LayoutParams layoutParams1 = (RelativeLayout.LayoutParams) view
+//                                    .getLayoutParams();
+////                            layoutParams1.leftMargin = round(x/100)*100 - xDelta;
+//                            layoutParams1.leftMargin = 30;
+//                            layoutParams1.topMargin = round(y/100)*100 - yDelta;
+//                            layoutParams1.rightMargin = 0;
+//                            layoutParams1.bottomMargin = 0;
+//                            view.setLayoutParams(layoutParams1);
 
 
 
@@ -184,6 +212,10 @@ public class Movable_Layout_Class_auto_lineup {
                             layoutParams.rightMargin = 0;
                             layoutParams.bottomMargin = 0;
                             view.setLayoutParams(layoutParams);
+
+
+
+
                             break;
                     }
                 }
