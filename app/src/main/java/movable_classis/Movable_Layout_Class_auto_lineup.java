@@ -3,6 +3,7 @@ package movable_classis;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -38,11 +39,9 @@ public class Movable_Layout_Class_auto_lineup {
     String present_scale_value_name;
 
 
-    Algorithm_dev_activity algorithm_dev_activity;
     private int this_layout_id;
-    private int[] algorithm_array_copy;
 
-    public int[] first_line_getY;
+
 
 
 
@@ -72,7 +71,6 @@ public class Movable_Layout_Class_auto_lineup {
 
         mframe.setOnTouchListener(onTouchListener());
 
-        algorithm_dev_activity = new Algorithm_dev_activity();
 
 
     }
@@ -87,8 +85,8 @@ public class Movable_Layout_Class_auto_lineup {
      * @param scale_value_name the layout scale size value name : String
      */
     public Movable_Layout_Class_auto_lineup(Context from_mainAcviticy_context, ViewGroup form_mainAcitiviy_Layout, ViewGroup you_want_moving_layout,
-                                            String[] location_xy, String scale_value_name, Boolean moving_hold_permanently, int layout_id, int[] algorithm_continuous,
-                                            int[] first_line_location){
+                                            String[] location_xy, String scale_value_name, Boolean moving_hold_permanently,
+                                            int layout_id){
         mainactivity_context = from_mainAcviticy_context;
         mainLayout = form_mainAcitiviy_Layout;
         mframe = you_want_moving_layout;
@@ -108,10 +106,9 @@ public class Movable_Layout_Class_auto_lineup {
 
         mframe.setOnTouchListener(onTouchListener());
 
-        algorithm_dev_activity = new Algorithm_dev_activity();
         this_layout_id = layout_id;
-        algorithm_array_copy = algorithm_continuous;
-        first_line_getY = first_line_location;
+
+
 
     }
 
@@ -150,6 +147,8 @@ public class Movable_Layout_Class_auto_lineup {
                 final int x = (int) event.getRawX();
                 final int y = (int) event.getRawY();
 
+                int pre_location_data = 0;
+
 
 
 
@@ -179,16 +178,18 @@ public class Movable_Layout_Class_auto_lineup {
                             location_xy_editor.commit();
 
 
-                            for(int i = 100; i < 2000; i+=100){
-                                if(view.getY() > i-200 && view.getY() < i-100){
-                                    algorithm_array_copy[i] = this_layout_id;
-                                    Log.i("algroithm save", -first_line_getY[0] + ", "+ i + " : " + this_layout_id);
-                                }
-                            }
+//                            for(int i = 100; i < 2000; i+=100){
+//                                if(view.getY() > i-200 && view.getY() < i-100){
+//                                    algorithm_array_copy[i] = this_layout_id;
+////                                    Log.i("algroithm save", -first_line_getY[0] + ", "+ i + " : " + this_layout_id);
+//                                      Log.i("algroithm save", -((Algorithm_dev_activity) mainactivity_context).first_line_getY + i + " : " + this_layout_id);
+//
+//                                }
+//                            }
 
 
 
-
+                            ((Algorithm_dev_activity) mainactivity_context).arranging_algorithm_continuous_from_layout_location(this_layout_id);
 
 
 //                            RelativeLayout.LayoutParams layoutParams1 = (RelativeLayout.LayoutParams) view
@@ -216,6 +217,43 @@ public class Movable_Layout_Class_auto_lineup {
 
 
 
+
+
+
+                            /* 자동으로 버튼 뒤에 자동으로 붙게 하는 것 논리가 어려워서 나중에 ..
+                            for(int i = 100; i < 2000; i+=100){
+                                if(view.getY() > i-200 && view.getY() < i-100){
+                                    if((-first_line_getY[0] + i)%100 != pre_location_data) { //스크롤이 위치가 이전이랑 다르면
+
+                                        //배치 순서를 1칸씩 뒤로 밀어버림
+                                        int temp_i = i;
+                                        boolean is_layout_new_layout = true; //중간에 위치가 바뀐건지, 새로 생긴게 들어온건지 확인
+                                        while(algorithm_array_copy[temp_i] >0){ //주소를 한칸씩 옮김
+                                            algorithm_array_copy[temp_i] = algorithm_array_copy[temp_i+1];
+                                        }
+                                        algorithm_array_copy[i] = this_layout_id;
+
+//                                        if(is_layout_new_layout && i>this_layout_id){
+//                                            ((Algorithm_dev_activity) mainactivity_context).layout_placement_by_next_id(i%100+1, (int) view.getX(), 0);
+//                                            Log.i("veiw x", view.getX()+"");
+//                                        }
+//                                        algorithm_dev_activity.auto_lining();
+
+
+
+
+                                        Log.i("algroithm save", -first_line_getY[0] + i + " : " + this_layout_id);
+//                                        pre_location_data = (-first_line_getY[0] + i)%100;
+//                                        view.setY((view.getY()%100)*100);
+
+                                    }
+
+                                }
+                            }
+
+*/
+
+
                             break;
                     }
                 }
@@ -224,6 +262,7 @@ public class Movable_Layout_Class_auto_lineup {
             }
         };
     }
+
 
 
 

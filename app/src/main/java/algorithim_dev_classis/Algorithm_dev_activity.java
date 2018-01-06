@@ -63,7 +63,8 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     int screenSizeType;
     int resourceId;
 
-    public int[] first_line_getY;
+    public int first_line_getY;
+    public int maximum_id = 0;
 
 
 
@@ -71,6 +72,10 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.algorithm_dev_layout);
+
+        DB_buttons = new int[2000][6];
+        algorithm_continuous = new int[2000];
+
 
 
         dm = getApplicationContext().getResources().getDisplayMetrics();
@@ -129,14 +134,9 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
 
-
-        DB_buttons = new int[4000][6];
-        algorithm_continuous = new int[8000];
-        first_line_getY = new int[1];
-
         /* 기본 고정된 기능 들 배치 시키기 */
         for(int i = 0; i < 7; i++){
-            LinearLayout new_Linear_layout = button_creating_method(i,i, 300, i*100, false);
+            LinearLayout new_Linear_layout = button_creating_method(i,i, (int) convertPixelsToDp((float)display_width*3/4, this), (i-1)*100 - 50, false);
         }
 
         //테스트용 db
@@ -167,11 +167,13 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
             LinearLayout new_Linear_layout = button_creating_method(i, DB_buttons[i][0], DB_buttons[i][2], DB_buttons[i][3], true);
             algorithm_continuous[i-10] = i; //알고리즘 순서
             Log.i("algorithm_continuous "+(i-10), i+"");
+            maximum_id = i; //마지막 id 번호
         }
         DB_buttons[0][0] = 1;
         DB_buttons[0][1] = 10;
         DB_buttons[0][2] = 10;
         DB_buttons[0][3] = 100;
+        algorithm_continuous[0] = 10;
 //        LinearLayout new_Linear_layout = button_creating_method(0, DB_buttons[0][0], DB_buttons[0][2], DB_buttons[0][3], true);
 //        final int temp = DB_buttons[0][1];
 //        new_Linear_layout.setOnClickListener(new View.OnClickListener() {
@@ -275,22 +277,64 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     }
 
 
-    private void auto_lining(){
-        first_line_getY[0] = display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY();
-        layout_placement_by_next_id(DB_buttons[0][1], 10, display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY());
+    public void auto_lining(){
+        first_line_getY = display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY();
+//        layout_placement_by_next_id(DB_buttons[0][1], 10, display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY());
+        layout_placement_by_next_id(0, 10, display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY());
         Log.i("first_line_getY", first_line_getY+"");
     }
 
+    public void arranging_algorithm_continuous_from_layout_location(int touched_id){
 
-    private boolean layout_placement_by_next_id(int next_id_number, int pre_layout_x, int pre_layout_y){
-        Log.i("db buttons : ", next_id_number +"");
+        int temp_array_num=0;
+        try{
+            ViewGroup layout1 = findViewById(touched_id);
+            if(layout1.getX() < convertPixelsToDp((float)display_width/2, this)) { //화면 중간을 넘어가면 배치 안하게
+                push_id_next_line(touched_id, (-first_line_getY + (int) layout1.getY()+50) / 100 - 1);
+                algorithm_continuous[(-first_line_getY + (int) layout1.getY()+50) / 100 - 1] = touched_id;
+                Log.i("algorithm_continuous", (-first_line_getY + (int) layout1.getY()+50) / 100 - 1+ "에 id가 " + touched_id);
+                auto_lining();
+            }else{
 
-        ViewGroup layout1 = findViewById(next_id_number);
+            }
+
+        }catch (Exception e){
+            Log.e("arranging_algorithm", e+"");
+        }
+
+    }
+
+    public boolean push_id_next_line(int touch_id, int pre_located_id){
+        try{
+            int[] temp_algorithm_contiuous = new int[2000];
+            for(int i=pre_located_id; i < algorithm_continuous.length-2;i++){
+                temp_algorithm_contiuous[i] = algorithm_continuous[i];
+                if(algorithm_continuous[i] == 0)
+                    break;
+            }
+            for(int i=pre_located_id; i < algorithm_continuous.length-2;i++){
+                algorithm_continuous[i+1] = temp_algorithm_contiuous[i];
+                if(algorithm_continuous[i] == 0)
+                    break;
+            }
+
+            return true;
+        }catch(Exception e){
+            return false;
+        }
+    }
+
+
+
+    public boolean layout_placement_by_next_id(int algorithm_continuous_number, int pre_layout_x, int pre_layout_y){
+        Log.i("db buttons : ", algorithm_continuous_number +"");
+
+        ViewGroup layout1 = findViewById(algorithm_continuous[algorithm_continuous_number]);
         layout1.setX(pre_layout_x);
         layout1.setY(pre_layout_y+100);
         try {
-            if (DB_buttons[next_id_number][1] > 0) { //다음 연속된 id가 저장되어 있으면
-                layout_placement_by_next_id(DB_buttons[next_id_number][1], (int) layout1.getX(), (int) layout1.getY());
+            if (algorithm_continuous[algorithm_continuous_number++] > 0) { //다음 연속된 id가 저장되어 있으면
+                layout_placement_by_next_id(algorithm_continuous_number++, (int) layout1.getX(), (int) layout1.getY());
                 return true;
             } else {
                 return false;
@@ -300,9 +344,12 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         }
     }
 
-    public int return_first_line_current_location(){ //첫번째 시작 버튼의 위치를 알려줘서 무버블클래스에서 지금 드래그 하는 위치가 어디어 속하는지 찾아봄
-        return display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY();
+
+
+    public void log_print(){
+        Log.i("test", "test");
     }
+
 
 
 
@@ -371,8 +418,8 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 //            String new_button_scale = "new_button_scale" + creating_button_number;
         Movable_Layout_Class_auto_lineup new_movable_button =
                 new Movable_Layout_Class_auto_lineup(
-                        getApplicationContext(), dev_layout_main, new_linear, new_buttons_location, scale_size, moving_hold_permanently,
-                        this_layout_id_number, algorithm_continuous, first_line_getY);
+                        this, dev_layout_main, new_linear, new_buttons_location, scale_size, moving_hold_permanently,
+                        this_layout_id_number);
 
         new_movable_button.Scale_size_adjustment(0.5f);
 
