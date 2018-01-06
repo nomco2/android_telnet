@@ -293,11 +293,12 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                 push_id_next_line(touched_id, (-first_line_getY + (int) layout1.getY()+50) / 100 - 1);
                 algorithm_continuous[(-first_line_getY + (int) layout1.getY()+50) / 100 - 1] = touched_id;
                 Log.i("algorithm_continuous", (-first_line_getY + (int) layout1.getY()+50) / 100 - 1+ "에 id가 " + touched_id);
-                auto_lining();
+
             }else{
+                delete_void_or_double_id(touched_id);
 
             }
-
+            auto_lining();
         }catch (Exception e){
             Log.e("arranging_algorithm", e+"");
         }
@@ -306,7 +307,9 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
     public boolean push_id_next_line(int touch_id, int pre_located_id){
         try{
+            delete_void_or_double_id(touch_id);
             int[] temp_algorithm_contiuous = new int[2000];
+
             for(int i=pre_located_id; i < algorithm_continuous.length-2;i++){
                 temp_algorithm_contiuous[i] = algorithm_continuous[i];
                 if(algorithm_continuous[i] == 0)
@@ -323,6 +326,43 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
             return false;
         }
     }
+
+    public boolean delete_void_or_double_id(int touch_id){
+
+        try {
+            boolean eixisting_touch_id = false; //기존 알고리즘에 포함되었던건지 확인
+            int eixistied_location = 0;
+            for (int i = 0; i < algorithm_continuous.length - 2; i++) {
+                if (algorithm_continuous[i] == touch_id) {
+                    eixisting_touch_id = true;
+                    eixistied_location = i;
+                }
+                if (algorithm_continuous[i] == 0)
+                    break;
+            }
+
+            if (eixisting_touch_id) {
+                int[] temp_algorithm_continuous = new int[2000];
+                for (int i = eixistied_location; i < algorithm_continuous.length - 2; i++) { // 배열 복사
+                    temp_algorithm_continuous[i] = algorithm_continuous[i];
+                    if (algorithm_continuous[i] == 0)
+                        break;
+                }
+                for (int i = eixistied_location; i < algorithm_continuous.length - 2; i++) { //뒤에있던것 앞으로 땡기기
+                    algorithm_continuous[i] = temp_algorithm_continuous[i + 1];
+                    if (algorithm_continuous[i] == 0)
+                        break;
+                }
+            }
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+
+
+    }
+
+
 
 
 
