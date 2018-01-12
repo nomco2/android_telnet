@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -97,13 +99,16 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         languageColors =  new LanguageColors();
         for(int i =0; i<20 ; i++){
             LinearLayout new_linear = new LinearLayout(getApplicationContext());
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 200);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 100);
             params.gravity = Gravity.CENTER;
             new_linear.setOrientation(LinearLayout.HORIZONTAL);
             new_linear.setLayoutParams(params);
+            new_linear.setBackgroundColor(Color.rgb(124,252,0));
 
             ImageView new_line = new ImageView(getApplicationContext());
-            new_line.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100));
+//            new_line.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100));
+            new_line.setLayoutParams(new ViewGroup.LayoutParams(  (int) ((float)display_width/2), 100));
+
             new_line.setImageDrawable(getResources().getDrawable(R.drawable.line_image));
             new_line.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.myshape));
             new_line.setId(90000 + i);
@@ -117,14 +122,18 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
             TextView line_number = new TextView(getApplicationContext());
-            line_number.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            line_number.setLayoutParams(new ViewGroup.LayoutParams((int) convertPixelsToDp((float)display_width/10, this), 100));
             line_number.setText(i+"");
-
-//            new_linear.addView(line_number);
-//            new_linear.addView(new_line);
+            line_number.setBackgroundColor(Color.rgb(0,0,0));
 
 
-            first_line.addView(new_line);
+
+
+            new_linear.addView(line_number);
+            new_linear.addView(new_line);
+
+
+            first_line.addView(new_linear);
             GradientDrawable bgShape = (GradientDrawable) new_line.getBackground();
             String selectedLanguage = "nomal" + i%2;
             bgShape.setColor(languageColors.getColor(selectedLanguage));
@@ -136,7 +145,8 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
         /* 기본 고정된 기능 들 배치 시키기 */
         for(int i = 0; i < 7; i++){
-            LinearLayout new_Linear_layout = button_creating_method(i,i, (int) convertPixelsToDp((float)display_width*3/4, this), (i-1)*100 - 50, false);
+            LinearLayout new_Linear_layout = button_creating_method(i + 99000,i, (int) ((float)display_width*3/5), (i-1)*80 +50, false);
+            LinearLayout new_Linear_layout2 = button_creating_method(i,i, (int) ((float)display_width*3/5), (i-1)*80 +50, true);
         }
 
         //테스트용 db
