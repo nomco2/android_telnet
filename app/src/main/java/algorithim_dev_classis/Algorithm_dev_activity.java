@@ -65,6 +65,9 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     int screenSizeType;
     int resourceId;
 
+    float line_size;
+
+
     public int first_line_getY;
     public int maximum_id = 0;
 
@@ -87,7 +90,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                 Configuration.SCREENLAYOUT_SIZE_MASK);
         resourceId = getApplicationContext().getResources().getIdentifier("status_bar_height", "dimen", "android");
 
-
+        line_size = convertPixelsToDp(display_height/6, getApplicationContext());
 
 
         dev_layout_main = (RelativeLayout) findViewById(R.id.dev_layout_main);
@@ -144,9 +147,9 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
         /* 기본 고정된 기능 들 배치 시키기 */
-        for(int i = 0; i < 7; i++){
+        for(int i = 1; i < 7; i++){
             LinearLayout new_Linear_layout = button_creating_method(i + 99000,i, (int) ((float)display_width*3/5), (i-1)*80 +50, false);
-            LinearLayout new_Linear_layout2 = button_creating_method(i,i, (int) ((float)display_width*3/5), (i-1)*80 +50, true);
+            RelativeLayout new_Linear_layout2 = button_creating_method2(i,i, (int) ((float)display_width*3/5), (i-1)*80 +50, true);
         }
 
         //테스트용 db
@@ -475,6 +478,81 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
         new_linear.addView(new_buttons);
 //            new_linear.addView(new_texts);
+        dev_layout_main.addView(new_linear);
+        new_linear.setX(location_x);
+        new_linear.setY(location_y);
+
+
+        return new_linear;
+    }
+
+
+    private RelativeLayout button_creating_method2(int id_numbers,int button_type, int location_x, int location_y, Boolean moving_hold_permanently){
+
+        int this_layout_id_number = id_numbers;
+
+
+        RelativeLayout new_linear = new RelativeLayout(getApplicationContext());
+        new_linear.setId(this_layout_id_number);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, 200);
+        new_linear.setGravity(RelativeLayout.CENTER_IN_PARENT);
+        new_linear.setLayoutParams(params);
+
+
+        ImageView new_buttons = new ImageView(getApplicationContext());
+//        new_buttons.setId(this_layout_id_number);
+        select_background_img(new_buttons, button_type); //백그라운드 이미지를 button type 번호에 따라서 배치
+        new_buttons.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 100));
+//            new_buttons.setOnClickListener(new_creation_buttons);
+
+        TextView new_texts = new TextView(getApplicationContext());
+        new_texts.setTextSize(convertPixelsToDp(display_height/8, getApplicationContext()));
+        new_texts.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_rectangle));
+        new_texts.setTextColor(Color.rgb(0,0,0));
+        switch (button_type){
+            case 0 :
+                new_texts.setText("모터1    속도");
+                break;
+            case 1 :
+                new_texts.setText("모터2    속도");
+                break;
+            case 2 :
+                new_texts.setText("모터1,2 정지");
+                break;
+            case 3 :
+                new_texts.setText("서보모터 각도");
+                break;
+            case 4 :
+                new_texts.setText("측정된   거리");
+                break;
+            case 5 :
+                new_texts.setText("지연     시간");
+                break;
+
+        }
+
+
+
+
+
+//            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(new_buttons.getWidth(), new_buttons.getHeight());
+//            new_frames.setLayoutParams(params);
+
+
+        String[] new_buttons_location = new String[2];
+        new_buttons_location[0] = "new_button_x" + this_layout_id_number;
+        new_buttons_location[1] = "new_button_y" + this_layout_id_number;
+        String scale_size = "scale_size" + this_layout_id_number;
+//            String new_button_scale = "new_button_scale" + creating_button_number;
+        Movable_Layout_Class_auto_lineup new_movable_button =
+                new Movable_Layout_Class_auto_lineup(
+                        this, dev_layout_main, new_linear, new_buttons_location, scale_size, moving_hold_permanently,
+                        this_layout_id_number);
+
+//        new_movable_button.Scale_size_adjustment(0.5f);
+
+//        new_linear.addView(new_buttons);
+        new_linear.addView(new_texts);
         dev_layout_main.addView(new_linear);
         new_linear.setX(location_x);
         new_linear.setY(location_y);
