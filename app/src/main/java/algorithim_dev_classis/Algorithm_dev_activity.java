@@ -51,6 +51,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     private int creating_button_id_number = 100;
     private int[][] DB_buttons;
     public int[] algorithm_continuous;
+    public int last_creating_id_number = 0;
 
     private ScrollView scrollview1;
     private LinearLayout first_line;
@@ -69,7 +70,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
     public int first_line_getY;
-    public int maximum_id = 0;
+//    public int maximum_id = 0;
 
 
 
@@ -99,14 +100,32 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         first_line = (LinearLayout) findViewById(R.id.first_line);
 
         /* 배경 줄 넣기         */
+
+        //첫째 줄 시작 지점 텍스트 표기
+        LinearLayout first_line_text_layout = new LinearLayout(getApplicationContext());
+        LinearLayout.LayoutParams temp_params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 100);
+        temp_params.gravity = Gravity.CENTER;
+        first_line_text_layout.setOrientation(LinearLayout.HORIZONTAL);
+        first_line_text_layout.setLayoutParams(temp_params);
+        first_line_text_layout.setBackgroundColor(Color.rgb(0,0,0));
+
+        TextView first_line_text = new TextView(getApplicationContext());
+        first_line_text.setText("시작 지점");
+        first_line_text.setLayoutParams(new ViewGroup.LayoutParams(  (int) ((float)display_width*6/12), 100));
+        first_line_text.setBackgroundColor(Color.rgb(0,0,0));
+
+        first_line_text_layout.addView(first_line_text);
+        first_line.addView(first_line_text_layout);
+
+        //나머지 줄 자동 생성
         languageColors =  new LanguageColors();
-        for(int i =0; i<20 ; i++){
+        for(int i =1; i<20 ; i++){
             LinearLayout new_linear = new LinearLayout(getApplicationContext());
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 100);
             params.gravity = Gravity.CENTER;
             new_linear.setOrientation(LinearLayout.HORIZONTAL);
             new_linear.setLayoutParams(params);
-            new_linear.setBackgroundColor(Color.rgb(124,252,0));
+            new_linear.setBackgroundColor(Color.rgb(0,0,0));
 
             ImageView new_line = new ImageView(getApplicationContext());
 //            new_line.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100));
@@ -145,42 +164,24 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 /*
  일반 id 배치
- id + 90000 = 고정된 배치
+ id 0~10 = 고정된 배치
  id + 3000 = for문 끝
  id + 2000 = if문 끝
  */
 
 
 
-        //테스트용 db
-//        for(int i=0; i<7; i++){
-//            id_numbering[i] = (i+1)*100 +i+1;
-//            Log.i("id number", id_numbering[i]+"");
-//            if(i !=0 ) {
-//                id_previous_next_operation[i][0] = (i) * 100 + i; //이전 것 id 넣기
-//                ViewGroup previous_layout = findViewById(id_previous_next_operation[i][0]);
-//                id_numbering_location[i][0] = id_numbering_location[i-1][0]; //x 위치는 동일하게
-//                id_numbering_location[i][1] = id_numbering_location[i-1][1] + 100; //y위치는 높이만큼 더해서
-//            }
-//
-//            if(i !=6 ) {
-//                id_previous_next_operation[i][1] = (i + 2) * 100 + i + 2; //다음 것 id 넣기
-//            }
-//        }
-
-
-
         /* 데이터 불러와서 배치하기 */
         for(int i = 10; i < 17; i++){
-            DB_buttons[i][0] = (i+1)%10; //버튼 종류
+            DB_buttons[i][0] = (i)%10; //버튼 종류
             DB_buttons[i][1] = i+1; //다음 연속된 버튼 id
             DB_buttons[i][2] = 10; //x위치
             DB_buttons[i][3] = i*100; //y위치
 
-            LinearLayout new_Linear_layout = button_creating_method(i, DB_buttons[i][0], DB_buttons[i][2], DB_buttons[i][3], true);
+            RelativeLayout new_Linear_layout = button_creating_method2(i, DB_buttons[i][0], DB_buttons[i][2], DB_buttons[i][3], true);
             algorithm_continuous[i-10] = i; //알고리즘 순서
             Log.i("algorithm_continuous "+(i-10), i+"");
-            maximum_id = i; //마지막 id 번호
+            last_creating_id_number = i; //마지막 id 번호
         }
         DB_buttons[0][0] = 1;
         DB_buttons[0][1] = 10;
@@ -189,17 +190,20 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         algorithm_continuous[0] = 10;
 
 
-        /* 기본 고정된 기능 들 배치 시키기 */
-        for(int i = 1; i < 7; i++){
-            LinearLayout new_Linear_layout = button_creating_method(i + 90000,i, (int) ((float)display_width*3/5), (i-1)*80 +50, false);
-            RelativeLayout new_Linear_layout2 = button_creating_method2(i,i, (int) ((float)display_width*3/5), (i-1)*80 +50, true);
 
+
+
+        for(int i = 1; i < 9; i++){
+                    /* 기본 고정된 기능 들 배치 시키기 */
+            RelativeLayout hold_layout = button_creating_method2(i,i, (int) ((float)display_width*3/6), (i-1)*80 +50, false);
+                    /* 오른쪽 새로 생성 버튼 */
+            RelativeLayout new_Linear_layout2 = button_creating_method2(i + last_creating_id_number,i, (int) ((float)display_width*3/6), (i-1)*80 +50, true);
         }
 
 
 
-        auto_lining();
 
+        auto_lining();
 
 
 
@@ -305,6 +309,18 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     }
 
 
+    public boolean is_id_included_algorithm_continuous(int id){
+        boolean it_was_included = false;
+        for(int i =0; i<algorithm_continuous.length - 2; i++){
+            if(algorithm_continuous[i] == id){
+                it_was_included = true;
+            }
+            if (algorithm_continuous[i] == 0)
+                break;
+        }
+        return it_was_included;
+    }
+
 
     public void arranging_algorithm_continuous_from_layout_location(int touched_id){
 
@@ -316,7 +332,8 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                 algorithm_continuous[(-first_line_getY + (int) layout1.getY()+50) / 100 - 1] = touched_id;
                 Log.i("algorithm_continuous", (-first_line_getY + (int) layout1.getY()+50) / 100 - 1+ "에 id가 " + touched_id + ", button type : " + DB_buttons[touched_id][0]);
 
-                if(DB_buttons[touched_id][0] == 6){ //if문이라면 if문 끝나는것 하나 추가
+
+                if(DB_buttons[touched_id][0] == 6 && !is_id_included_algorithm_continuous(touched_id+2000)){ //if문이라면 if문 끝나는것 하나 추가 && 이미 만들어 져있으면 만들지 말고
                     int end_of_if_condition = touched_id + 2000;
                     RelativeLayout new_Relative_layout = button_creating_method2(end_of_if_condition, 7,  (int) ((float)display_width*3/5) ,(int)layout1.getY(), true);
                     push_id_next_line(end_of_if_condition, (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 );
@@ -541,39 +558,8 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         new_texts.setTextSize(convertPixelsToDp(display_height/8, getApplicationContext()));
         new_texts.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_rectangle));
         new_texts.setTextColor(Color.rgb(0,0,0));
-        switch (button_type){
-            case 0 :
-                new_texts.setText("모터1    속도");
-                break;
-            case 1 :
-                new_texts.setText("모터2    속도");
-                break;
-            case 2 :
-                new_texts.setText("모터1,2 정지");
-                break;
-            case 3 :
-                new_texts.setText("서보모터 각도");
-                break;
-            case 4 :
-                new_texts.setText("측정된   거리");
-                break;
-            case 5 :
-                new_texts.setText("지연     시간");
-                break;
-            case 6 :
-                new_texts.setText("만약에  ~라면");
-                break;
-            case 7 :
-                new_texts.setText("만약에 끝    ");
-                break;
-            case 8 :
-                new_texts.setText("반복하기     ");
-                break;
-            case 9 :
-                new_texts.setText("반복하기 끝  ");
-                break;
+        select_background_text(new_texts, button_type, id_numbers);
 
-        }
 
 
 
@@ -602,6 +588,11 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         new_linear.setY(location_y);
 
 
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) new_linear.getLayoutParams();
+        layoutParams.width = 400;
+
+        new_linear.setLayoutParams(layoutParams);
+
         return new_linear;
     }
 
@@ -615,32 +606,74 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
      * @param id_number
      * @return
      */
-    private void select_background_img(ImageView imageView, int id_number){
+    private void select_background_img(ImageView imageView, int id_number) {
 
 
-        switch (id_number){
-            case 1 :
+        switch (id_number) {
+            case 1:
                 imageView.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.motor1_speed_btn));
                 break;
-            case 2 :
+            case 2:
                 imageView.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.motor2_speed_btn));
                 break;
-            case 3 :
+            case 3:
                 imageView.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.motor12_stop_btn));
                 break;
-            case 4 :
+            case 4:
                 imageView.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.servo_motor_angle_btn));
                 break;
-            case 5 :
+            case 5:
                 imageView.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.distance_value));
                 break;
-            case 6 :
+            case 6:
                 imageView.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.delay_btn));
                 break;
-            case 7 :
+            case 7:
 //                imageView.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.motor1_speed_btn));
                 break;
         }
+    }
+
+    private void select_background_text(TextView new_texts, int button_type, int id_number){
+        switch (button_type){
+            case 99 :
+                new_texts.setText("시 작  지 점");
+                break;
+
+            case 0 :
+                new_texts.setText("모터1    속도");
+                break;
+            case 1 :
+                new_texts.setText("모터2    속도");
+                break;
+            case 2 :
+                new_texts.setText("모터1,2 정지");
+                break;
+            case 3 :
+                new_texts.setText("서보모터 각도");
+                break;
+            case 4 :
+                new_texts.setText("측정된   거리");
+                break;
+            case 5 :
+                new_texts.setText("지연     시간");
+                break;
+            case 6 :
+                new_texts.setText("("+id_number%2000 +") " + "만약에~라면");
+                break;
+            case 7 :
+                new_texts.setText("("+id_number%2000 +") " + "만약에 끝");
+                break;
+            case 8 :
+                new_texts.setText("반복하기     ");
+                break;
+            case 9 :
+                new_texts.setText("반복하기 끝  ");
+                break;
+
+
+        }
+
 
     }
 
