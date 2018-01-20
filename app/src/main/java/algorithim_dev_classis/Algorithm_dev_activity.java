@@ -78,8 +78,8 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.algorithm_dev_layout);
 
-        DB_buttons = new int[2000][6];
-        algorithm_continuous = new int[2000];
+        DB_buttons = new int[4000][6]; //생성된 순서대로 id를 부여하고 버튼타입을 저장
+        algorithm_continuous = new int[2000]; //id를 배치된 순서대로 넣는 배열
 
 
 
@@ -143,14 +143,14 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
         }
 
+/*
+ 일반 id 배치
+ id + 90000 = 고정된 배치
+ id + 3000 = for문 끝
+ id + 2000 = if문 끝
+ */
 
 
-
-        /* 기본 고정된 기능 들 배치 시키기 */
-        for(int i = 1; i < 7; i++){
-            LinearLayout new_Linear_layout = button_creating_method(i + 99000,i, (int) ((float)display_width*3/5), (i-1)*80 +50, false);
-            RelativeLayout new_Linear_layout2 = button_creating_method2(i,i, (int) ((float)display_width*3/5), (i-1)*80 +50, true);
-        }
 
         //테스트용 db
 //        for(int i=0; i<7; i++){
@@ -187,14 +187,17 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         DB_buttons[0][2] = 10;
         DB_buttons[0][3] = 100;
         algorithm_continuous[0] = 10;
-//        LinearLayout new_Linear_layout = button_creating_method(0, DB_buttons[0][0], DB_buttons[0][2], DB_buttons[0][3], true);
-//        final int temp = DB_buttons[0][1];
-//        new_Linear_layout.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(getApplicationContext(),temp+"", Toast.LENGTH_LONG).show();
-//            }
-//        });
+
+
+        /* 기본 고정된 기능 들 배치 시키기 */
+        for(int i = 1; i < 7; i++){
+            LinearLayout new_Linear_layout = button_creating_method(i + 90000,i, (int) ((float)display_width*3/5), (i-1)*80 +50, false);
+            RelativeLayout new_Linear_layout2 = button_creating_method2(i,i, (int) ((float)display_width*3/5), (i-1)*80 +50, true);
+
+        }
+
+
+
         auto_lining();
 
 
@@ -228,8 +231,6 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                 }
 
 
-
-
             }
 
         }
@@ -240,6 +241,10 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
+                case 50: //새로운 레이아웃 생성
+
+                    break;
+
                 case 100: //스크롤 이동
 //                    Toast.makeText(getApplicationContext(),scrollview1.getScrollY()+"",Toast.LENGTH_SHORT).show();
 //                    DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
@@ -255,6 +260,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 //                    layout_placement_by_next_id(DB_buttons[0][1], 10, display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY());
                     auto_lining();
                 break;
+
             }
         }
     };
@@ -293,9 +299,12 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     public void auto_lining(){
         first_line_getY = display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY();
 //        layout_placement_by_next_id(DB_buttons[0][1], 10, display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY());
+                               //int algorithm_continuous_number, int pre_layout_x, int pre_layout_y
         layout_placement_by_next_id(0, 10, display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY());
         Log.i("first_line_getY", first_line_getY+"");
     }
+
+
 
     public void arranging_algorithm_continuous_from_layout_location(int touched_id){
 
@@ -305,30 +314,52 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
             if(layout1.getX() < convertPixelsToDp((float)display_width/2, this)) { //화면 중간을 넘어가면 배치 안하게
                 push_id_next_line(touched_id, (-first_line_getY + (int) layout1.getY()+50) / 100 - 1);
                 algorithm_continuous[(-first_line_getY + (int) layout1.getY()+50) / 100 - 1] = touched_id;
-                Log.i("algorithm_continuous", (-first_line_getY + (int) layout1.getY()+50) / 100 - 1+ "에 id가 " + touched_id);
+                Log.i("algorithm_continuous", (-first_line_getY + (int) layout1.getY()+50) / 100 - 1+ "에 id가 " + touched_id + ", button type : " + DB_buttons[touched_id][0]);
+
+                if(DB_buttons[touched_id][0] == 6){ //if문이라면 if문 끝나는것 하나 추가
+                    int end_of_if_condition = touched_id + 2000;
+                    RelativeLayout new_Relative_layout = button_creating_method2(end_of_if_condition, 7,  (int) ((float)display_width*3/5) ,(int)layout1.getY(), true);
+                    push_id_next_line(end_of_if_condition, (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 );
+                    algorithm_continuous[(-first_line_getY + (int) new_Relative_layout.getY()+50) / 100] = end_of_if_condition;
+                    Log.i("algorithm_continuous", (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 + "에 id가 " + (end_of_if_condition));
+                }
 
             }else{
-                delete_void_or_double_id(touched_id);
+                if(DB_buttons[touched_id][0] == 6 || DB_buttons[touched_id][0] == 7) { //if문이라면 if문 끝나는것도 함께 지우기
+                    delete_void_or_double_id(touched_id%2000);
+                    delete_void_or_double_id(touched_id%2000 + 2000);
+                    ViewGroup delete_if_condition_child = findViewById(touched_id%2000);
+                    ViewGroup delete_if_condition_child2 = findViewById(touched_id%2000 + 2000);
+                    dev_layout_main.removeView(delete_if_condition_child);
+                    dev_layout_main.removeView(delete_if_condition_child2);
+                }else{
+                    delete_void_or_double_id(touched_id);
+                }
 
             }
             auto_lining();
+            for(int i =0; i< 100; i++) {
+                Log.i(i+"", algorithm_continuous[i]+"");
+                if(algorithm_continuous[i] == 0)
+                    break;
+            }
         }catch (Exception e){
             Log.e("arranging_algorithm", e+"");
         }
 
     }
 
-    public boolean push_id_next_line(int touch_id, int pre_located_id){
+    public boolean push_id_next_line(int touch_id, int pre_id_location){
         try{
             delete_void_or_double_id(touch_id);
             int[] temp_algorithm_contiuous = new int[2000];
 
-            for(int i=pre_located_id; i < algorithm_continuous.length-2;i++){
+            for(int i=pre_id_location; i < algorithm_continuous.length-2;i++){ //id 순서 배열 복제
                 temp_algorithm_contiuous[i] = algorithm_continuous[i];
                 if(algorithm_continuous[i] == 0)
                     break;
             }
-            for(int i=pre_located_id; i < algorithm_continuous.length-2;i++){
+            for(int i=pre_id_location; i < algorithm_continuous.length-2;i++){ //id를 한칸씩 밀기
                 algorithm_continuous[i+1] = temp_algorithm_contiuous[i];
                 if(algorithm_continuous[i] == 0)
                     break;
@@ -349,6 +380,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                 if (algorithm_continuous[i] == touch_id) {
                     eixisting_touch_id = true;
                     eixistied_location = i;
+                    Log.i("already included id", touch_id+"");
                 }
                 if (algorithm_continuous[i] == 0)
                     break;
@@ -490,7 +522,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     private RelativeLayout button_creating_method2(int id_numbers,int button_type, int location_x, int location_y, Boolean moving_hold_permanently){
 
         int this_layout_id_number = id_numbers;
-
+        DB_buttons[id_numbers][0] = button_type; //버튼 종류 저장
 
         RelativeLayout new_linear = new RelativeLayout(getApplicationContext());
         new_linear.setId(this_layout_id_number);
@@ -528,6 +560,18 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
             case 5 :
                 new_texts.setText("지연     시간");
                 break;
+            case 6 :
+                new_texts.setText("만약에  ~라면");
+                break;
+            case 7 :
+                new_texts.setText("만약에 끝    ");
+                break;
+            case 8 :
+                new_texts.setText("반복하기     ");
+                break;
+            case 9 :
+                new_texts.setText("반복하기 끝  ");
+                break;
 
         }
 
@@ -549,7 +593,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                         this, dev_layout_main, new_linear, new_buttons_location, scale_size, moving_hold_permanently,
                         this_layout_id_number);
 
-//        new_movable_button.Scale_size_adjustment(0.5f);
+        new_movable_button.Scale_size_adjustment(0.5f);
 
 //        new_linear.addView(new_buttons);
         new_linear.addView(new_texts);
