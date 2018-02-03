@@ -17,6 +17,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+
 }
 
 dependencies {
@@ -29,5 +31,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile project(':commons-net-3.3')
     compile project(':ion-2.0.5')
-}
 
+}

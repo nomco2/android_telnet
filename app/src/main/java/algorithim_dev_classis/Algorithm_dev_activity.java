@@ -35,6 +35,8 @@ import movable_classis.Movable_Layout_Class;
 import movable_classis.Movable_Layout_Class_auto_lineup;
 import telnet.MainActivity;
 
+
+
 /**
  * Created by KimFamily on 2017-10-25.
  */
@@ -104,16 +106,16 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         //첫째 줄 시작 지점 텍스트 표기
         LinearLayout first_line_text_layout = new LinearLayout(getApplicationContext());
         LinearLayout.LayoutParams temp_params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 100);
-        temp_params.gravity = Gravity.CENTER;
         first_line_text_layout.setOrientation(LinearLayout.HORIZONTAL);
         first_line_text_layout.setLayoutParams(temp_params);
         first_line_text_layout.setBackgroundColor(Color.rgb(0,0,0));
+        first_line_text_layout.setGravity(Gravity.LEFT);
 
         TextView first_line_text = new TextView(getApplicationContext());
         first_line_text.setText("시작 지점");
         first_line_text.setLayoutParams(new ViewGroup.LayoutParams(  (int) ((float)display_width*6/12), 100));
         first_line_text.setBackgroundColor(Color.rgb(0,0,0));
-
+        first_line_text.setTextSize(1,convertPixelsToDp(70,this));
         first_line_text_layout.addView(first_line_text);
         first_line.addView(first_line_text_layout);
 
@@ -544,7 +546,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         RelativeLayout new_linear = new RelativeLayout(getApplicationContext());
         new_linear.setId(this_layout_id_number);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, 200);
-        new_linear.setGravity(RelativeLayout.CENTER_IN_PARENT);
+        new_linear.setGravity(Gravity.CENTER_VERTICAL);
         new_linear.setLayoutParams(params);
 
 
@@ -558,6 +560,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         new_texts.setTextSize(convertPixelsToDp(display_height/8, getApplicationContext()));
         new_texts.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_rectangle));
         new_texts.setTextColor(Color.rgb(0,0,0));
+        new_texts.setTextSize(1,convertPixelsToDp(75,this));
         select_background_text(new_texts, button_type, id_numbers);
 
 
@@ -565,8 +568,6 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
 
-//            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(new_buttons.getWidth(), new_buttons.getHeight());
-//            new_frames.setLayoutParams(params);
 
 
         String[] new_buttons_location = new String[2];
@@ -589,7 +590,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) new_linear.getLayoutParams();
-        layoutParams.width = 400;
+        layoutParams.width = 600;
 
         new_linear.setLayoutParams(layoutParams);
 
@@ -641,22 +642,22 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                 break;
 
             case 0 :
-                new_texts.setText("모터1    속도");
+                new_texts.setText(" 모터1 속도 \n              = 0 ");
                 break;
             case 1 :
-                new_texts.setText("모터2    속도");
+                new_texts.setText(" 모터2 속도 \n              = 0");
                 break;
             case 2 :
-                new_texts.setText("모터1,2 정지");
+                new_texts.setText(" 모터1,2 \n              정지");
                 break;
             case 3 :
-                new_texts.setText("서보모터 각도");
+                new_texts.setText("서보모터 각도 \n              = 360도");
                 break;
             case 4 :
-                new_texts.setText("측정된   거리");
+                new_texts.setText("측정된 거리 \n              ");
                 break;
             case 5 :
-                new_texts.setText("지연     시간");
+                new_texts.setText("지연 시간 \n              = 0초");
                 break;
             case 6 :
                 new_texts.setText("("+id_number%2000 +") " + "만약에~라면");
