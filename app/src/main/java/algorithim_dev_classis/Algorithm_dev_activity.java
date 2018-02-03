@@ -196,10 +196,17 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
         for(int i = 1; i < 9; i++){
+            int y_location = (i-1)*100; // (i-1)*80 +50
+            if(i == 7){
+                continue;
+            }else if(i == 8){
+                y_location = (i-2)*100;
+            }
+
                     /* 기본 고정된 기능 들 배치 시키기 */
-            RelativeLayout hold_layout = button_creating_method2(i,i, (int) ((float)display_width*3/6), (i-1)*80 +50, false);
+            RelativeLayout hold_layout = button_creating_method2(i,i, (int) ((float)display_width*3/6), y_location, false);
                     /* 오른쪽 새로 생성 버튼 */
-            RelativeLayout new_Linear_layout2 = button_creating_method2(i + last_creating_id_number,i, (int) ((float)display_width*3/6), (i-1)*80 +50, true);
+            RelativeLayout new_Linear_layout2 = button_creating_method2(i + last_creating_id_number,i, (int) ((float)display_width*3/6),y_location, true);
         }
 
 
@@ -343,9 +350,27 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                     Log.i("algorithm_continuous", (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 + "에 id가 " + (end_of_if_condition));
                 }
 
+                if(DB_buttons[touched_id][0] == 8 && !is_id_included_algorithm_continuous(touched_id+2000)){ //for문이라면 for문 끝나는것 하나 추가 && 이미 만들어 져있으면 만들지 말고
+                    int end_of_if_condition = touched_id + 2000;
+                    RelativeLayout new_Relative_layout = button_creating_method2(end_of_if_condition, 9,  (int) ((float)display_width*3/5) ,(int)layout1.getY(), true);
+                    push_id_next_line(end_of_if_condition, (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 );
+                    algorithm_continuous[(-first_line_getY + (int) new_Relative_layout.getY()+50) / 100] = end_of_if_condition;
+                    Log.i("algorithm_continuous", (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 + "에 id가 " + (end_of_if_condition));
+                }
 
             }else{
                 if(DB_buttons[touched_id][0] == 6 || DB_buttons[touched_id][0] == 7) { //if문이라면 if문 끝나는것도 함께 지우기
+                    delete_void_or_double_id(touched_id%2000);
+                    delete_void_or_double_id(touched_id%2000 + 2000);
+                    ViewGroup delete_if_condition_child = findViewById(touched_id%2000);
+                    ViewGroup delete_if_condition_child2 = findViewById(touched_id%2000 + 2000);
+                    dev_layout_main.removeView(delete_if_condition_child);
+                    dev_layout_main.removeView(delete_if_condition_child2);
+                }else{
+                    delete_void_or_double_id(touched_id);
+                }
+
+                if(DB_buttons[touched_id][0] == 8 || DB_buttons[touched_id][0] == 9) { //for문이라면 for문 끝나는것도 함께 지우기
                     delete_void_or_double_id(touched_id%2000);
                     delete_void_or_double_id(touched_id%2000 + 2000);
                     ViewGroup delete_if_condition_child = findViewById(touched_id%2000);
@@ -361,21 +386,24 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
             /*line color change */
 
-            int if_count = 0;
+            int count = 0;
             for(int i =0; i< 100; i++) {
 
-                Log.i(i + "", algorithm_continuous[i] + "");
-                if (DB_buttons[algorithm_continuous[i]][0] == 6) {
-                    if_count += 1;
+                //조건문 반복문 counting
+                if (DB_buttons[algorithm_continuous[i]][0] == 6 || DB_buttons[algorithm_continuous[i]][0] == 8) {
+                    count += 1;
                 }
 
-                    changing_backline_color(i, if_count);
 
 
-                if (DB_buttons[algorithm_continuous[i]][0] == 7) {
-                    changing_backline_color(i, if_count);
-                    if_count -= 1;
+                changing_backline_color_if(i, count);
+
+                //조건문 반복문 end decounting
+                if (DB_buttons[algorithm_continuous[i]][0] == 7 || DB_buttons[algorithm_continuous[i]][0] == 9) {
+                    changing_backline_color_if(i, count);
+                    count -= 1;
                 }
+
 
                 if (algorithm_continuous[i] == 0)
                     break;
@@ -466,28 +494,27 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     }
 
     /* UI pretty method */
-    private void changing_backline_color(int line_number, int if_count){
+    private void changing_backline_color_if(int line_number, int count){
         try {
             ImageView new_line = new ImageView(getApplicationContext());
             new_line = findViewById(90000 + line_number+1);
             GradientDrawable bgShape = (GradientDrawable) new_line.getBackground();
 
-            if(if_count != 0) {
-                String selectedLanguage = "if" + if_count % 5;
+            if(count != 0) {
+                String selectedLanguage;
+                selectedLanguage = "if" + count % 10;
+
                 bgShape.setColor(languageColors.getColor(selectedLanguage));
             }else{
                 String selectedLanguage = "nomal" + (line_number+1)%2;
                 bgShape.setColor(languageColors.getColor(selectedLanguage));
             }
 
-
-
         }catch (Exception e){
 
         }
 
     }
-
 
 
 
@@ -704,16 +731,20 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                 new_texts.setText("지연 시간 \n              = 0초");
                 break;
             case 6 :
-                new_texts.setText("("+id_number%2000 +") " + "만약에~라면");
+                new_texts.setText(id_number%2000+ " 만약에~라면");
+                new_texts.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_rectangle_if));
                 break;
             case 7 :
-                new_texts.setText("("+id_number%2000 +") " + "만약에 끝");
+                new_texts.setText(id_number%2000+ " 만약에 끝");
+                new_texts.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_rectangle_if));
                 break;
             case 8 :
-                new_texts.setText("반복하기     ");
+                new_texts.setText(id_number%2000 + " 반복하기");
+                new_texts.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_rectangle_for));
                 break;
             case 9 :
-                new_texts.setText("반복하기 끝  ");
+                new_texts.setText(id_number%2000 + " 반복하기 끝");
+                new_texts.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_rectangle_for));
                 break;
 
 

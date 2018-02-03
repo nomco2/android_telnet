@@ -29,17 +29,16 @@ public class LanguageColors {
         colorMap.put("nomal1", "#444444");
         colorMap.put("nomal2", "#CCFFCC");
 
-        colorMap.put("if0", "#00FFFF");
-        colorMap.put("if1", "#00BFFF");
-        colorMap.put("if2", "#1E90FF");
-        colorMap.put("if3", "#0000FF");
-        colorMap.put("if4", "#000080");
-
-        colorMap.put("for0", "#00FF7F");
-        colorMap.put("for1", "#7CFC00");
-        colorMap.put("for2", "#32CD32");
-        colorMap.put("for3", "#3CB371");
-        colorMap.put("for4", "#228B22");
+        colorMap.put("if0", "#E8F5E9");
+        colorMap.put("if1", "#C8E6C9");
+        colorMap.put("if2", "#A5D6A7");
+        colorMap.put("if3", "#81C784");
+        colorMap.put("if4", "#66BB6A");
+        colorMap.put("if5", "#4CAF50");
+        colorMap.put("if6", "#43A047");
+        colorMap.put("if7", "#388E3C");
+        colorMap.put("if8", "#2E7D32");
+        colorMap.put("if9", "#1B5E20");
     }
 
 
