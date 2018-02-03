@@ -28,8 +28,49 @@ public class LanguageColors {
         colorMap.put("nomal0", "#777777");
         colorMap.put("nomal1", "#444444");
         colorMap.put("nomal2", "#CCFFCC");
-        colorMap.put("if", "#FFCCCC");
-        colorMap.put("for", "#CCCCFF");
+
+        colorMap.put("if0", "#00FFFF");
+        colorMap.put("if1", "#00BFFF");
+        colorMap.put("if2", "#1E90FF");
+        colorMap.put("if3", "#0000FF");
+        colorMap.put("if4", "#000080");
+
+        colorMap.put("for0", "#00FF7F");
+        colorMap.put("for1", "#7CFC00");
+        colorMap.put("for2", "#32CD32");
+        colorMap.put("for3", "#3CB371");
+        colorMap.put("for4", "#228B22");
+    }
+
+
+    private void setColors_line_color_custum(int R, int G, int B) {
+
+        String color = "#";
+        if(R<10) {
+            color += "0" + R;
+        }else if(R<100){
+            color += R;
+        }else{
+            color += "00";
+        }
+
+        if(G<10) {
+            color += "0" + G;
+        }else if(G<100){
+            color += G;
+        }else{
+            color += "00";
+        }
+
+        if(B<10) {
+            color += "0" + B;
+        }else if(B<100){
+            color += B;
+        }else{
+            color += "00";
+        }
+        colorMap.put("if_button_line", color);
+
 
 
     }

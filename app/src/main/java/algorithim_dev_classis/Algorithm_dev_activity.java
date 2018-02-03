@@ -343,6 +343,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                     Log.i("algorithm_continuous", (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 + "에 id가 " + (end_of_if_condition));
                 }
 
+
             }else{
                 if(DB_buttons[touched_id][0] == 6 || DB_buttons[touched_id][0] == 7) { //if문이라면 if문 끝나는것도 함께 지우기
                     delete_void_or_double_id(touched_id%2000);
@@ -357,9 +358,26 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
             }
             auto_lining();
+
+            /*line color change */
+
+            int if_count = 0;
             for(int i =0; i< 100; i++) {
-                Log.i(i+"", algorithm_continuous[i]+"");
-                if(algorithm_continuous[i] == 0)
+
+                Log.i(i + "", algorithm_continuous[i] + "");
+                if (DB_buttons[algorithm_continuous[i]][0] == 6) {
+                    if_count += 1;
+                }
+
+                    changing_backline_color(i, if_count);
+
+
+                if (DB_buttons[algorithm_continuous[i]][0] == 7) {
+                    changing_backline_color(i, if_count);
+                    if_count -= 1;
+                }
+
+                if (algorithm_continuous[i] == 0)
                     break;
             }
         }catch (Exception e){
@@ -383,6 +401,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                 if(algorithm_continuous[i] == 0)
                     break;
             }
+
 
             return true;
         }catch(Exception e){
@@ -424,10 +443,8 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         }
 
 
+
     }
-
-
-
 
 
     public boolean layout_placement_by_next_id(int algorithm_continuous_number, int pre_layout_x, int pre_layout_y){
@@ -447,6 +464,33 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
             return false;
         }
     }
+
+    /* UI pretty method */
+    private void changing_backline_color(int line_number, int if_count){
+        try {
+            ImageView new_line = new ImageView(getApplicationContext());
+            new_line = findViewById(90000 + line_number+1);
+            GradientDrawable bgShape = (GradientDrawable) new_line.getBackground();
+
+            if(if_count != 0) {
+                String selectedLanguage = "if" + if_count % 5;
+                bgShape.setColor(languageColors.getColor(selectedLanguage));
+            }else{
+                String selectedLanguage = "nomal" + (line_number+1)%2;
+                bgShape.setColor(languageColors.getColor(selectedLanguage));
+            }
+
+
+
+        }catch (Exception e){
+
+        }
+
+    }
+
+
+
+
 
 
 
