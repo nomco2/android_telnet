@@ -197,11 +197,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
         for(int i = 1; i < 9; i++){
             int y_location = (i-1)*100; // (i-1)*80 +50
-            if(i == 7){
-                continue;
-            }else if(i == 8){
-                y_location = (i-2)*100;
-            }
+
 
                     /* 기본 고정된 기능 들 배치 시키기 */
             RelativeLayout hold_layout = button_creating_method2(i,i, (int) ((float)display_width*3/6), y_location, false);
@@ -259,18 +255,6 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                     break;
 
                 case 100: //스크롤 이동
-//                    Toast.makeText(getApplicationContext(),scrollview1.getScrollY()+"",Toast.LENGTH_SHORT).show();
-//                    DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
-//                    int display_width = dm.widthPixels;
-//                    int display_height = dm.heightPixels;
-//
-//                    ViewGroup linerlayout1 = findViewById(0); //시작되는 레이아웃 id = 0
-//                    try {
-//                        linerlayout1.setY(display_height - getStatusBarHeight() - scrollview1.getScrollY());
-//                    }catch(Exception e){
-//
-//                    }
-//                    layout_placement_by_next_id(DB_buttons[0][1], 10, display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY());
                     auto_lining();
                 break;
 
@@ -331,6 +315,8 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     }
 
 
+
+
     public void arranging_algorithm_continuous_from_layout_location(int touched_id){
 
         int temp_array_num=0;
@@ -342,69 +328,56 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                 Log.i("algorithm_continuous", (-first_line_getY + (int) layout1.getY()+50) / 100 - 1+ "에 id가 " + touched_id + ", button type : " + DB_buttons[touched_id][0]);
 
 
-                if(DB_buttons[touched_id][0] == 6 && !is_id_included_algorithm_continuous(touched_id+2000)){ //if문이라면 if문 끝나는것 하나 추가 && 이미 만들어 져있으면 만들지 말고
+                if((DB_buttons[touched_id][0] == 6 || DB_buttons[touched_id][0] == 7) && !is_id_included_algorithm_continuous(touched_id+2000)){ //if문이라면 if문 끝나는것 하나 추가 && 이미 만들어 져있으면 만들지 말고
                     int end_of_if_condition = touched_id + 2000;
-                    RelativeLayout new_Relative_layout = button_creating_method2(end_of_if_condition, 7,  (int) ((float)display_width*3/5) ,(int)layout1.getY(), true);
+                    RelativeLayout new_Relative_layout = button_creating_method2(end_of_if_condition, 8,  (int) ((float)display_width*3/5) ,(int)layout1.getY(), true);
                     push_id_next_line(end_of_if_condition, (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 );
                     algorithm_continuous[(-first_line_getY + (int) new_Relative_layout.getY()+50) / 100] = end_of_if_condition;
                     Log.i("algorithm_continuous", (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 + "에 id가 " + (end_of_if_condition));
                 }
 
-                if(DB_buttons[touched_id][0] == 8 && !is_id_included_algorithm_continuous(touched_id+2000)){ //for문이라면 for문 끝나는것 하나 추가 && 이미 만들어 져있으면 만들지 말고
-                    int end_of_if_condition = touched_id + 2000;
-                    RelativeLayout new_Relative_layout = button_creating_method2(end_of_if_condition, 9,  (int) ((float)display_width*3/5) ,(int)layout1.getY(), true);
-                    push_id_next_line(end_of_if_condition, (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 );
-                    algorithm_continuous[(-first_line_getY + (int) new_Relative_layout.getY()+50) / 100] = end_of_if_condition;
-                    Log.i("algorithm_continuous", (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 + "에 id가 " + (end_of_if_condition));
-                }
 
             }else{
-                if(DB_buttons[touched_id][0] == 6 || DB_buttons[touched_id][0] == 7) { //if문이라면 if문 끝나는것도 함께 지우기
-                    delete_void_or_double_id(touched_id%2000);
-                    delete_void_or_double_id(touched_id%2000 + 2000);
-                    ViewGroup delete_if_condition_child = findViewById(touched_id%2000);
-                    ViewGroup delete_if_condition_child2 = findViewById(touched_id%2000 + 2000);
+
+                if(DB_buttons[touched_id][0] == 6 || DB_buttons[touched_id][0] == 7) {
+                    //if나 for문이라면 끝나는것도 함께 지우기
+                    int near_end_condition_id = find_end_condition_by_button_type_below(touched_id);
+                    delete_void_or_double_id(touched_id);
+                    delete_void_or_double_id(near_end_condition_id);
+                    ViewGroup delete_if_condition_child = findViewById(touched_id);
+                    ViewGroup delete_if_condition_child2 = findViewById(near_end_condition_id);
+                    dev_layout_main.removeView(delete_if_condition_child);
+                    dev_layout_main.removeView(delete_if_condition_child2);
+                }else if(DB_buttons[touched_id][0] == 8) {
+                    int near_end_condition_id = find_end_condition_by_button_type_upper(touched_id);
+                    delete_void_or_double_id(touched_id);
+                    delete_void_or_double_id(near_end_condition_id);
+                    ViewGroup delete_if_condition_child = findViewById(touched_id);
+                    ViewGroup delete_if_condition_child2 = findViewById(near_end_condition_id);
                     dev_layout_main.removeView(delete_if_condition_child);
                     dev_layout_main.removeView(delete_if_condition_child2);
                 }else{
+                    //조건 반목문이 아닌 일반 버튼은 그냥 삭제
                     delete_void_or_double_id(touched_id);
                 }
 
-                if(DB_buttons[touched_id][0] == 8 || DB_buttons[touched_id][0] == 9) { //for문이라면 for문 끝나는것도 함께 지우기
-                    delete_void_or_double_id(touched_id%2000);
-                    delete_void_or_double_id(touched_id%2000 + 2000);
-                    ViewGroup delete_if_condition_child = findViewById(touched_id%2000);
-                    ViewGroup delete_if_condition_child2 = findViewById(touched_id%2000 + 2000);
-                    dev_layout_main.removeView(delete_if_condition_child);
-                    dev_layout_main.removeView(delete_if_condition_child2);
-                }else{
-                    delete_void_or_double_id(touched_id);
-                }
 
             }
             auto_lining();
 
             /*line color change */
-
             int count = 0;
-            for(int i =0; i< 100; i++) {
-
+            for(int i =0;  i < algorithm_continuous.length - 2; i++) {
                 //조건문 반복문 counting
-                if (DB_buttons[algorithm_continuous[i]][0] == 6 || DB_buttons[algorithm_continuous[i]][0] == 8) {
+                if (DB_buttons[algorithm_continuous[i]][0] == 6 || DB_buttons[algorithm_continuous[i]][0] == 7) {
                     count += 1;
                 }
-
-
-
                 changing_backline_color_if(i, count);
-
                 //조건문 반복문 end decounting
-                if (DB_buttons[algorithm_continuous[i]][0] == 7 || DB_buttons[algorithm_continuous[i]][0] == 9) {
+                if (DB_buttons[algorithm_continuous[i]][0] == 8) {
                     changing_backline_color_if(i, count);
                     count -= 1;
                 }
-
-
                 if (algorithm_continuous[i] == 0)
                     break;
             }
@@ -412,6 +385,74 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
             Log.e("arranging_algorithm", e+"");
         }
 
+    }
+
+
+    private int find_end_condition_by_button_type_below(int touch_id){
+        int return_id=0;
+        boolean eixisting_touch_id = false; //기존 알고리즘에 포함되었던건지 확인
+        int eixistied_location = 0;
+        int count = 0;
+        for(int i =0;  i < algorithm_continuous.length - 2; i++) {
+            //조건문 반복문 counting
+            if (DB_buttons[algorithm_continuous[i]][0] == 6 || DB_buttons[algorithm_continuous[i]][0] == 7) {
+                count += 1;
+                if(algorithm_continuous[i] == touch_id){
+                    eixistied_location = count;
+                }
+            }
+            //조건문 반복문 end decounting
+            if (DB_buttons[algorithm_continuous[i]][0] == 8) {
+                if(count == eixistied_location){
+                    return_id = algorithm_continuous[i];
+                    break;
+                }
+                count -= 1;
+
+            }
+            if (algorithm_continuous[i] == 0)
+                break;
+        }
+
+
+        return return_id;
+    }
+
+    private int find_end_condition_by_button_type_upper(int touch_id){
+        //역으로 올라가기 위해 배열의 마지막을 찾음
+        int end_algorithm_continuous = 0;
+        for(int i =0;  i < algorithm_continuous.length - 2; i++) {
+            if (algorithm_continuous[i] == 0) {
+                end_algorithm_continuous = i;
+                break;
+            }
+        }
+
+
+        int return_id=0;
+        boolean eixisting_touch_id = false; //기존 알고리즘에 포함되었던건지 확인
+        int eixistied_location = 0;
+        int count = 0;
+        for(int i =end_algorithm_continuous;  i > 0 ; i--) {
+            if (DB_buttons[algorithm_continuous[i]][0] == 8) {
+                count += 1;
+                if(algorithm_continuous[i] == touch_id){
+                    eixistied_location = count;
+                }
+            }
+
+
+            //조건문 반복문 counting
+            if (DB_buttons[algorithm_continuous[i]][0] == 6 || DB_buttons[algorithm_continuous[i]][0] == 7) {
+                if(count == eixistied_location){
+                    return_id = algorithm_continuous[i];
+                    break;
+                }
+                count -= 1;
+            }
+
+        }
+        return return_id;
     }
 
     public boolean push_id_next_line(int touch_id, int pre_id_location){
@@ -555,58 +596,6 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     };
 
 
-    private LinearLayout button_creating_method(int id_numbers,int button_type, int location_x, int location_y, Boolean moving_hold_permanently){
-
-        int this_layout_id_number = id_numbers;
-
-
-        LinearLayout new_linear = new LinearLayout(getApplicationContext());
-        new_linear.setId(this_layout_id_number);
-
-
-        ImageView new_buttons = new ImageView(getApplicationContext());
-//        new_buttons.setId(this_layout_id_number);
-        select_background_img(new_buttons, button_type); //백그라운드 이미지를 button type 번호에 따라서 배치
-        new_buttons.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-//            new_buttons.setOnClickListener(new_creation_buttons);
-
-//            TextView new_texts = new TextView(getApplicationContext());
-//            new_texts.setId(creating_button_number + 2);
-//            new_texts.setText("이동 손잡이");
-
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 200);
-        params.gravity = Gravity.CENTER;
-        new_linear.setOrientation(LinearLayout.VERTICAL);
-        new_linear.setLayoutParams(params);
-
-
-
-
-//            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(new_buttons.getWidth(), new_buttons.getHeight());
-//            new_frames.setLayoutParams(params);
-
-
-        String[] new_buttons_location = new String[2];
-        new_buttons_location[0] = "new_button_x" + this_layout_id_number;
-        new_buttons_location[1] = "new_button_y" + this_layout_id_number;
-        String scale_size = "scale_size" + this_layout_id_number;
-//            String new_button_scale = "new_button_scale" + creating_button_number;
-        Movable_Layout_Class_auto_lineup new_movable_button =
-                new Movable_Layout_Class_auto_lineup(
-                        this, dev_layout_main, new_linear, new_buttons_location, scale_size, moving_hold_permanently,
-                        this_layout_id_number);
-
-        new_movable_button.Scale_size_adjustment(0.5f);
-
-        new_linear.addView(new_buttons);
-//            new_linear.addView(new_texts);
-        dev_layout_main.addView(new_linear);
-        new_linear.setX(location_x);
-        new_linear.setY(location_y);
-
-
-        return new_linear;
-    }
 
 
     private RelativeLayout button_creating_method2(int id_numbers,int button_type, int location_x, int location_y, Boolean moving_hold_permanently){
@@ -722,28 +711,28 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                 new_texts.setText(" 모터1,2 \n              정지");
                 break;
             case 3 :
-                new_texts.setText("서보모터 각도 \n              = 360도");
+                new_texts.setText(" 서보모터 각도 \n              = 360도");
                 break;
             case 4 :
-                new_texts.setText("측정된 거리 \n              ");
+                new_texts.setText(" 측정된 거리 \n              ");
                 break;
             case 5 :
-                new_texts.setText("지연 시간 \n              = 0초");
+                new_texts.setText(" 지연 시간 \n              = 0초");
                 break;
             case 6 :
-                new_texts.setText(id_number%2000+ " 만약에~라면");
+                new_texts.setText(" 만약에~라면");
                 new_texts.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_rectangle_if));
                 break;
             case 7 :
-                new_texts.setText(id_number%2000+ " 만약에 끝");
+                new_texts.setText(" 반복하기");
                 new_texts.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_rectangle_if));
                 break;
             case 8 :
-                new_texts.setText(id_number%2000 + " 반복하기");
+                new_texts.setText("~여기까지");
                 new_texts.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_rectangle_for));
                 break;
             case 9 :
-                new_texts.setText(id_number%2000 + " 반복하기 끝");
+                new_texts.setText(" 반복하기 끝");
                 new_texts.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_rectangle_for));
                 break;
 

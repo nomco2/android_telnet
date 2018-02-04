@@ -142,7 +142,6 @@ public class Movable_Layout_Class_auto_lineup {
                             location_xy_editor.commit();
 
 
-
                             ((Algorithm_dev_activity) mainactivity_context).arranging_algorithm_continuous_from_layout_location(this_layout_id);
 
 
