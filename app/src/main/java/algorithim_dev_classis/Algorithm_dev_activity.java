@@ -67,6 +67,8 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     int display_height;
     int screenSizeType;
     int resourceId;
+    int buttons_height;
+    float text_size;
 
     float line_size;
 
@@ -94,6 +96,29 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         resourceId = getApplicationContext().getResources().getIdentifier("status_bar_height", "dimen", "android");
 
         line_size = convertPixelsToDp(display_height/6, getApplicationContext());
+        buttons_height = display_height/20;
+
+
+
+
+        if(display_height < 1000){ //HD
+//            buttons_height = (int)convertPixelsToDp((display_height/4), getApplicationContext());
+//            text_size = buttons_height/2;
+            text_size = 20;
+            buttons_height = 60;
+        }else if(display_height < 1400){ //FHD
+            text_size = 25;
+            buttons_height = 100;
+        }else if(display_height < 2000){ //QHD
+            text_size = 25;
+            buttons_height = 120;
+        }else{ //UHD
+
+        }
+
+
+
+
 
 
         dev_layout_main = (RelativeLayout) findViewById(R.id.dev_layout_main);
@@ -605,7 +630,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
         RelativeLayout new_linear = new RelativeLayout(getApplicationContext());
         new_linear.setId(this_layout_id_number);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, 200);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, buttons_height);
         new_linear.setGravity(Gravity.CENTER_VERTICAL);
         new_linear.setLayoutParams(params);
 
@@ -613,7 +638,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         ImageView new_buttons = new ImageView(getApplicationContext());
 //        new_buttons.setId(this_layout_id_number);
         select_background_img(new_buttons, button_type); //백그라운드 이미지를 button type 번호에 따라서 배치
-        new_buttons.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 100));
+        new_buttons.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
 //            new_buttons.setOnClickListener(new_creation_buttons);
 
         TextView new_texts = new TextView(getApplicationContext());
@@ -640,7 +665,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                         this, dev_layout_main, new_linear, new_buttons_location, scale_size, moving_hold_permanently,
                         this_layout_id_number);
 
-        new_movable_button.Scale_size_adjustment(0.5f);
+//        new_movable_button.Scale_size_adjustment(0.5f);
 
 //        new_linear.addView(new_buttons);
         new_linear.addView(new_texts);
@@ -650,7 +675,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) new_linear.getLayoutParams();
-        layoutParams.width = 600;
+//        layoutParams.width = 600;
 
         new_linear.setLayoutParams(layoutParams);
 
