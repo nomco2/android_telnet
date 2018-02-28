@@ -70,7 +70,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     int buttons_height;
     float text_size;
 
-    float line_size;
+    int line_size;
 
 
     public int first_line_getY;
@@ -95,27 +95,29 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                 Configuration.SCREENLAYOUT_SIZE_MASK);
         resourceId = getApplicationContext().getResources().getIdentifier("status_bar_height", "dimen", "android");
 
-        line_size = convertPixelsToDp(display_height/6, getApplicationContext());
-        buttons_height = display_height/20;
-
-
+        line_size = (int) convertPixelsToDp(display_height/6, getApplicationContext());
 
 
         if(display_height < 1000){ //HD
 //            buttons_height = (int)convertPixelsToDp((display_height/4), getApplicationContext());
 //            text_size = buttons_height/2;
-            text_size = 20;
-            buttons_height = 60;
+            buttons_height = (int) convertPixelsToDp(display_height, this) / 6;
+            text_size =  (int) (buttons_height/1.2);
+
         }else if(display_height < 1400){ //FHD
-            text_size = 25;
-            buttons_height = 100;
+            buttons_height = (int) convertPixelsToDp(display_height, this) / 4;
+            text_size = (int) (buttons_height/1.7);
+
         }else if(display_height < 2000){ //QHD
-            text_size = 25;
-            buttons_height = 120;
+            buttons_height = (int) convertPixelsToDp(display_height, this) / 3;
+            text_size = (int) (buttons_height/2.3);
+
+
         }else{ //UHD
 
         }
 
+//        Toast.makeText(this, buttons_height+"", Toast.LENGTH_SHORT).show();
 
 
 
@@ -130,7 +132,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
         //첫째 줄 시작 지점 텍스트 표기
         LinearLayout first_line_text_layout = new LinearLayout(getApplicationContext());
-        LinearLayout.LayoutParams temp_params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 100);
+        LinearLayout.LayoutParams temp_params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, buttons_height);
         first_line_text_layout.setOrientation(LinearLayout.HORIZONTAL);
         first_line_text_layout.setLayoutParams(temp_params);
         first_line_text_layout.setBackgroundColor(Color.rgb(0,0,0));
@@ -138,7 +140,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
         TextView first_line_text = new TextView(getApplicationContext());
         first_line_text.setText("시작 지점");
-        first_line_text.setLayoutParams(new ViewGroup.LayoutParams(  (int) ((float)display_width*6/12), 100));
+        first_line_text.setLayoutParams(new ViewGroup.LayoutParams(  (int) ((float)display_width*6/12), ViewGroup.LayoutParams.MATCH_PARENT));
         first_line_text.setBackgroundColor(Color.rgb(0,0,0));
         first_line_text.setTextSize(1,convertPixelsToDp(70,this));
         first_line_text_layout.addView(first_line_text);
@@ -148,7 +150,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         languageColors =  new LanguageColors();
         for(int i =1; i<20 ; i++){
             LinearLayout new_linear = new LinearLayout(getApplicationContext());
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 100);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, buttons_height);
             params.gravity = Gravity.CENTER;
             new_linear.setOrientation(LinearLayout.HORIZONTAL);
             new_linear.setLayoutParams(params);
@@ -156,7 +158,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
             ImageView new_line = new ImageView(getApplicationContext());
 //            new_line.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100));
-            new_line.setLayoutParams(new ViewGroup.LayoutParams(  (int) ((float)display_width/2), 100));
+            new_line.setLayoutParams(new ViewGroup.LayoutParams(  (int) ((float)display_width/2), ViewGroup.LayoutParams.MATCH_PARENT));
 
             new_line.setImageDrawable(getResources().getDrawable(R.drawable.line_image));
             new_line.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.myshape));
@@ -171,9 +173,10 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
             TextView line_number = new TextView(getApplicationContext());
-            line_number.setLayoutParams(new ViewGroup.LayoutParams((int) convertPixelsToDp((float)display_width/10, this), 100));
+            line_number.setLayoutParams(new ViewGroup.LayoutParams((int) convertPixelsToDp((float)display_width/10, this), ViewGroup.LayoutParams.MATCH_PARENT));
             line_number.setText(i+"");
             line_number.setBackgroundColor(Color.rgb(0,0,0));
+            line_number.setTextSize(text_size/4);
 
 
 
@@ -319,10 +322,41 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
     public void auto_lining(){
-        first_line_getY = display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY();
+//        first_line_getY = display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY();
+//        if(display_height < 1000){ //HD
+////            buttons_height = (int)convertPixelsToDp((display_height/4), getApplicationContext());
+////            text_size = buttons_height/2;
+////            text_size = 50;
+////            buttons_height = 80;
+//            first_line_getY = display_height - getStatusBarHeight() - (display_height - buttons_height) - scrollview1.getScrollY();
+//
+//        }else if(display_height < 1400){ //FHD
+////            text_size = 25;
+////            buttons_height = 150;
+//            first_line_getY = display_height - getStatusBarHeight() - (display_height - buttons_height) - scrollview1.getScrollY() + 40;
+//
+//        }else if(display_height < 2000){ //QHD
+////            text_size = 25;
+////            buttons_height = 150;
+//            first_line_getY = display_height - getStatusBarHeight() - (display_height - buttons_height) - scrollview1.getScrollY()+60;
+//
+//        }else{ //UHD
+//
+//
+//        }
+//        first_line_getY = buttons_height - getStatusBarHeight() - (display_height - buttons_height) - scrollview1.getScrollY();
+        first_line_getY = buttons_height -  scrollview1.getScrollY();
+
+        if(scrollview1.getScrollY() == 0)
+        Toast.makeText(getApplicationContext(),"first line"+first_line_getY+"",Toast.LENGTH_SHORT).show();
+
+
+
 //        layout_placement_by_next_id(DB_buttons[0][1], 10, display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY());
                                //int algorithm_continuous_number, int pre_layout_x, int pre_layout_y
-        layout_placement_by_next_id(0, 10, display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY());
+//        layout_placement_by_next_id(0, 10, display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY());
+        layout_placement_by_next_id(0, 10, first_line_getY);
+
         Log.i("first_line_getY", first_line_getY+"");
     }
 
@@ -348,17 +382,30 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         try{
             ViewGroup layout1 = findViewById(touched_id);
             if(layout1.getX() < convertPixelsToDp((float)display_width/2, this)) { //화면 중간을 넘어가면 배치 안하게
-                push_id_next_line(touched_id, (-first_line_getY + (int) layout1.getY()+50) / 100 - 1);
-                algorithm_continuous[(-first_line_getY + (int) layout1.getY()+50) / 100 - 1] = touched_id;
-                Log.i("algorithm_continuous", (-first_line_getY + (int) layout1.getY()+50) / 100 - 1+ "에 id가 " + touched_id + ", button type : " + DB_buttons[touched_id][0]);
+//                push_id_next_line(touched_id, (-first_line_getY + (int) layout1.getY()+50) / 100 - 1);
+//                algorithm_continuous[(-first_line_getY + (int) layout1.getY()+50) / 100 - 1] = touched_id;
+//                Log.i("algorithm_continuous", (-first_line_getY + (int) layout1.getY()+50) / 100 - 1+ "에 id가 " + touched_id + ", button type : " + DB_buttons[touched_id][0]);
+//
+//
+//                if((DB_buttons[touched_id][0] == 6 || DB_buttons[touched_id][0] == 7) && !is_id_included_algorithm_continuous(touched_id+2000)){ //if문이라면 if문 끝나는것 하나 추가 && 이미 만들어 져있으면 만들지 말고
+//                    int end_of_if_condition = touched_id + 2000;
+//                    RelativeLayout new_Relative_layout = button_creating_method2(end_of_if_condition, 8,  (int) ((float)display_width*3/5) ,(int)layout1.getY(), true);
+//                    push_id_next_line(end_of_if_condition, (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 );
+//                    algorithm_continuous[(-first_line_getY + (int) new_Relative_layout.getY()+50) / 100] = end_of_if_condition;
+//                    Log.i("algorithm_continuous", (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 + "에 id가 " + (end_of_if_condition));
+
+                    int calculation_array_num = (-first_line_getY + (int) layout1.getY()+buttons_height/2) / buttons_height;
+                    push_id_next_line(touched_id, calculation_array_num - 1);
+                    algorithm_continuous[calculation_array_num - 1] = touched_id;
+                    Log.i("algorithm_continuous", calculation_array_num - 1+ "에 id가 " + touched_id + ", button type : " + DB_buttons[touched_id][0]);
 
 
-                if((DB_buttons[touched_id][0] == 6 || DB_buttons[touched_id][0] == 7) && !is_id_included_algorithm_continuous(touched_id+2000)){ //if문이라면 if문 끝나는것 하나 추가 && 이미 만들어 져있으면 만들지 말고
-                    int end_of_if_condition = touched_id + 2000;
-                    RelativeLayout new_Relative_layout = button_creating_method2(end_of_if_condition, 8,  (int) ((float)display_width*3/5) ,(int)layout1.getY(), true);
-                    push_id_next_line(end_of_if_condition, (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 );
-                    algorithm_continuous[(-first_line_getY + (int) new_Relative_layout.getY()+50) / 100] = end_of_if_condition;
-                    Log.i("algorithm_continuous", (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 + "에 id가 " + (end_of_if_condition));
+                    if((DB_buttons[touched_id][0] == 6 || DB_buttons[touched_id][0] == 7) && !is_id_included_algorithm_continuous(touched_id+2000)){ //if문이라면 if문 끝나는것 하나 추가 && 이미 만들어 져있으면 만들지 말고
+                        int end_of_if_condition = touched_id + 2000;
+                        RelativeLayout new_Relative_layout = button_creating_method2(end_of_if_condition, 8,  (int) ((float)display_width*3/5) ,(int)layout1.getY(), true);
+                        push_id_next_line(end_of_if_condition, calculation_array_num );
+                        algorithm_continuous[calculation_array_num] = end_of_if_condition;
+                        Log.i("algorithm_continuous", calculation_array_num + "에 id가 " + (end_of_if_condition));
                 }
 
 
@@ -546,7 +593,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
         ViewGroup layout1 = findViewById(algorithm_continuous[algorithm_continuous_number]);
         layout1.setX(pre_layout_x);
-        layout1.setY(pre_layout_y+100);
+        layout1.setY(pre_layout_y+buttons_height);
         try {
             if (algorithm_continuous[algorithm_continuous_number++] > 0) { //다음 연속된 id가 저장되어 있으면
                 layout_placement_by_next_id(algorithm_continuous_number++, (int) layout1.getX(), (int) layout1.getY());
@@ -630,7 +677,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
         RelativeLayout new_linear = new RelativeLayout(getApplicationContext());
         new_linear.setId(this_layout_id_number);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, buttons_height);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,buttons_height*2);
         new_linear.setGravity(Gravity.CENTER_VERTICAL);
         new_linear.setLayoutParams(params);
 
@@ -642,10 +689,11 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 //            new_buttons.setOnClickListener(new_creation_buttons);
 
         TextView new_texts = new TextView(getApplicationContext());
-        new_texts.setTextSize(convertPixelsToDp(display_height/8, getApplicationContext()));
+//        new_texts.setTextSize(convertPixelsToDp(display_height/8, getApplicationContext()));
         new_texts.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_rectangle));
         new_texts.setTextColor(Color.rgb(0,0,0));
-        new_texts.setTextSize(1,convertPixelsToDp(75,this));
+//        new_texts.setTextSize(1,convertPixelsToDp(75,this));
+        new_texts.setTextSize(1,text_size);
         select_background_text(new_texts, button_type, id_numbers);
 
 
