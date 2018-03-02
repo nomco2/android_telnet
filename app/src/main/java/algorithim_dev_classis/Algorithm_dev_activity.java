@@ -206,7 +206,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
             DB_buttons[i][0] = (i)%10; //버튼 종류
             DB_buttons[i][1] = i+1; //다음 연속된 버튼 id
             DB_buttons[i][2] = 10; //x위치
-            DB_buttons[i][3] = i*100; //y위치
+            DB_buttons[i][3] = i*buttons_height; //y위치
 
             RelativeLayout new_Linear_layout = button_creating_method2(i, DB_buttons[i][0], DB_buttons[i][2], DB_buttons[i][3], true);
             algorithm_continuous[i-10] = i; //알고리즘 순서
@@ -224,7 +224,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
         for(int i = 1; i < 9; i++){
-            int y_location = (i-1)*100; // (i-1)*80 +50
+            int y_location = (i-1)*buttons_height; // (i-1)*80 +50
 
 
                     /* 기본 고정된 기능 들 배치 시키기 */
@@ -322,30 +322,27 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
     public void auto_lining(){
-//        first_line_getY = display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY();
-//        if(display_height < 1000){ //HD
-////            buttons_height = (int)convertPixelsToDp((display_height/4), getApplicationContext());
-////            text_size = buttons_height/2;
-////            text_size = 50;
-////            buttons_height = 80;
-//            first_line_getY = display_height - getStatusBarHeight() - (display_height - buttons_height) - scrollview1.getScrollY();
-//
-//        }else if(display_height < 1400){ //FHD
-////            text_size = 25;
-////            buttons_height = 150;
-//            first_line_getY = display_height - getStatusBarHeight() - (display_height - buttons_height) - scrollview1.getScrollY() + 40;
-//
-//        }else if(display_height < 2000){ //QHD
-////            text_size = 25;
-////            buttons_height = 150;
-//            first_line_getY = display_height - getStatusBarHeight() - (display_height - buttons_height) - scrollview1.getScrollY()+60;
-//
-//        }else{ //UHD
-//
-//
-//        }
-//        first_line_getY = buttons_height - getStatusBarHeight() - (display_height - buttons_height) - scrollview1.getScrollY();
+
+
         first_line_getY = buttons_height -  scrollview1.getScrollY();
+
+        if(display_height < 1000){ //HD
+
+            first_line_getY += 3;
+
+        }else if(display_height < 1400){ //FHD
+
+            first_line_getY += 15;
+
+        }else if(display_height < 2000){ //QHD
+
+            first_line_getY += 23;
+
+        }else{ //UHD
+
+
+        }
+
 
         if(scrollview1.getScrollY() == 0)
         Toast.makeText(getApplicationContext(),"first line"+first_line_getY+"",Toast.LENGTH_SHORT).show();
@@ -382,17 +379,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         try{
             ViewGroup layout1 = findViewById(touched_id);
             if(layout1.getX() < convertPixelsToDp((float)display_width/2, this)) { //화면 중간을 넘어가면 배치 안하게
-//                push_id_next_line(touched_id, (-first_line_getY + (int) layout1.getY()+50) / 100 - 1);
-//                algorithm_continuous[(-first_line_getY + (int) layout1.getY()+50) / 100 - 1] = touched_id;
-//                Log.i("algorithm_continuous", (-first_line_getY + (int) layout1.getY()+50) / 100 - 1+ "에 id가 " + touched_id + ", button type : " + DB_buttons[touched_id][0]);
-//
-//
-//                if((DB_buttons[touched_id][0] == 6 || DB_buttons[touched_id][0] == 7) && !is_id_included_algorithm_continuous(touched_id+2000)){ //if문이라면 if문 끝나는것 하나 추가 && 이미 만들어 져있으면 만들지 말고
-//                    int end_of_if_condition = touched_id + 2000;
-//                    RelativeLayout new_Relative_layout = button_creating_method2(end_of_if_condition, 8,  (int) ((float)display_width*3/5) ,(int)layout1.getY(), true);
-//                    push_id_next_line(end_of_if_condition, (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 );
-//                    algorithm_continuous[(-first_line_getY + (int) new_Relative_layout.getY()+50) / 100] = end_of_if_condition;
-//                    Log.i("algorithm_continuous", (-first_line_getY + (int) new_Relative_layout.getY()+50) / 100 + "에 id가 " + (end_of_if_condition));
+
 
                     int calculation_array_num = (-first_line_getY + (int) layout1.getY()+buttons_height/2) / buttons_height;
                     push_id_next_line(touched_id, calculation_array_num - 1);
@@ -591,9 +578,12 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     public boolean layout_placement_by_next_id(int algorithm_continuous_number, int pre_layout_x, int pre_layout_y){
         Log.i("db buttons : ", algorithm_continuous_number +"");
 
-        ViewGroup layout1 = findViewById(algorithm_continuous[algorithm_continuous_number]);
+        RelativeLayout layout1 = findViewById(algorithm_continuous[algorithm_continuous_number]);
         layout1.setX(pre_layout_x);
         layout1.setY(pre_layout_y+buttons_height);
+//        layout1.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+//        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) layout1.getLayoutParams();
+//        layoutParams.leftMargin = 10;
         try {
             if (algorithm_continuous[algorithm_continuous_number++] > 0) { //다음 연속된 id가 저장되어 있으면
                 layout_placement_by_next_id(algorithm_continuous_number++, (int) layout1.getX(), (int) layout1.getY());
