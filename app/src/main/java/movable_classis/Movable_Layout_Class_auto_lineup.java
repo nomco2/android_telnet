@@ -132,6 +132,30 @@ public class Movable_Layout_Class_auto_lineup {
                             xDelta = x - lParams.leftMargin;
                             yDelta = y - lParams.topMargin;
 
+
+                            //오른쪽 안쓴 거에서 가져오면, 새로 생성해 주기
+                            boolean is_this_layout_unselected = true;
+                            int this_layout_button_type =  ((Algorithm_dev_activity) mainactivity_context).DB_buttons[this_layout_id][0];
+                            for(int i=0;i<((Algorithm_dev_activity) mainactivity_context).button_type_numbers; i++){
+                                if(this_layout_id == ((Algorithm_dev_activity) mainactivity_context).unselected_buttons[i]) {
+                                    is_this_layout_unselected = true;
+                                    Toast.makeText(mainactivity_context,"unselected id "+this_layout_id,Toast.LENGTH_SHORT).show();
+                                    break;
+                                }
+
+                            }
+
+
+                            if(is_this_layout_unselected) {
+
+                                ((Algorithm_dev_activity) mainactivity_context).unselected_button_creation(this_layout_id);
+                                ((Algorithm_dev_activity) mainactivity_context).unselected_buttons[this_layout_button_type] = ((Algorithm_dev_activity) mainactivity_context).last_creating_id_number;
+//                                    Toast.makeText(mainactivity_context,i+"",Toast.LENGTH_SHORT).show();
+                                break;
+                            }
+
+
+                            mframe.bringToFront();
                             break;
 
                         case MotionEvent.ACTION_UP:
@@ -141,9 +165,10 @@ public class Movable_Layout_Class_auto_lineup {
                             location_xy_editor.putFloat(mloaction_xy[1], mframe.getY());
                             location_xy_editor.commit();
 
+                            Toast.makeText(mainactivity_context,"this id:"+this_layout_id+" last id:"+((Algorithm_dev_activity) mainactivity_context).last_creating_id_number,Toast.LENGTH_SHORT).show();
 
                             ((Algorithm_dev_activity) mainactivity_context).arranging_algorithm_continuous_from_layout_location(this_layout_id);
-
+//Toast.makeText(mainactivity_context,mframe.getX()+"",Toast.LENGTH_SHORT).show();
 
 
                             break;

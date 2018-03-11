@@ -20,6 +20,7 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -51,9 +52,11 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
     private RelativeLayout dev_layout_main;
     private int creating_button_id_number = 100;
-    private int[][] DB_buttons;
+    public int[][] DB_buttons;
     public int[] algorithm_continuous;
     public int last_creating_id_number = 0;
+    public int[] unselected_buttons;
+    public int button_type_numbers=8;
 
     private ScrollView scrollview1;
     private LinearLayout first_line;
@@ -63,11 +66,11 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
     DisplayMetrics dm;
-    int display_width;
+    public int display_width;
     int display_height;
     int screenSizeType;
     int resourceId;
-    int buttons_height;
+    public int buttons_height;
     float text_size;
 
     int line_size;
@@ -126,6 +129,19 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         dev_layout_main = (RelativeLayout) findViewById(R.id.dev_layout_main);
 
         scrollview1 = (ScrollView) findViewById(R.id.scrollview1);
+        scrollview1.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                int scrollY = scrollview1.getScrollY(); // For ScrollView
+//                int scrollX = scrollview1.getScrollX(); // For HorizontalScrollView
+                // DO SOMETHING WITH THE SCROLL COORDINATES
+                Message msg =  Auto_lineup_and_dont_overaping_handler.obtainMessage();
+                msg.what =100;
+                Auto_lineup_and_dont_overaping_handler.sendMessage(msg);
+                previous_scroll_value = scrollview1.getScrollY();
+            }
+        });
+
         first_line = (LinearLayout) findViewById(R.id.first_line);
 
         /* 배경 줄 넣기         */
@@ -194,7 +210,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 /*
  일반 id 배치
- id 0~10 = 고정된 배치
+ id 0~10 = 고정된 배치 -> 1씩 증가
  id + 3000 = for문 끝
  id + 2000 = if문 끝
  */
@@ -203,12 +219,12 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
         /* 데이터 불러와서 배치하기 */
         for(int i = 10; i < 17; i++){
-            DB_buttons[i][0] = (i)%10; //버튼 종류
-            DB_buttons[i][1] = i+1; //다음 연속된 버튼 id
-            DB_buttons[i][2] = 10; //x위치
-            DB_buttons[i][3] = i*buttons_height; //y위치
+//            DB_buttons[i][0] = (i)%10; //버튼 종류
+//            DB_buttons[i][1] = i+1; //다음 연속된 버튼 id
+//            DB_buttons[i][2] = 10; //x위치
+//            DB_buttons[i][3] = i*buttons_height; //y위치
 
-            RelativeLayout new_Linear_layout = button_creating_method2(i, DB_buttons[i][0], DB_buttons[i][2], DB_buttons[i][3], true);
+            RelativeLayout new_Linear_layout = button_creating_method2(i, (i)%10, 10, i*buttons_height, true);
             algorithm_continuous[i-10] = i; //알고리즘 순서
             Log.i("algorithm_continuous "+(i-10), i+"");
             last_creating_id_number = i; //마지막 id 번호
@@ -222,16 +238,19 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
 
-
-        for(int i = 1; i < 9; i++){
-            int y_location = (i-1)*buttons_height; // (i-1)*80 +50
+        unselected_buttons = new int[8];
+        for(int i = 0; i < button_type_numbers; i++){
+            int y_location = (i)*buttons_height; // (i-1)*80 +50
 
 
                     /* 기본 고정된 기능 들 배치 시키기 */
-            RelativeLayout hold_layout = button_creating_method2(i,i, (int) ((float)display_width*3/6), y_location, false);
+//            RelativeLayout hold_layout = button_creating_method2(i,i, (int) ((float)display_width*3/6), y_location, false);
                     /* 오른쪽 새로 생성 버튼 */
             RelativeLayout new_Linear_layout2 = button_creating_method2(i + last_creating_id_number,i, (int) ((float)display_width*3/6),y_location, true);
-        }
+            unselected_buttons[i] = i + last_creating_id_number;
+         }
+
+
 
 
 
@@ -241,9 +260,9 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
         /*쓰레드*/
-        Auto_lineup_and_dont_overaping auto_lineup_and_dont_overaping = new Auto_lineup_and_dont_overaping();
-        auto_lineup_and_dont_overaping.setDaemon(true);
-        auto_lineup_and_dont_overaping.start();
+//        Auto_lineup_and_dont_overaping auto_lineup_and_dont_overaping = new Auto_lineup_and_dont_overaping();
+//        auto_lineup_and_dont_overaping.setDaemon(true);
+//        auto_lineup_and_dont_overaping.start();
 
 
 
@@ -260,12 +279,12 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
             while(!this.isInterrupted()) {
 
                 /* 스크롤 이동할때 */
-                if(previous_scroll_value != scrollview1.getScrollY()){
-                    Message msg =  Auto_lineup_and_dont_overaping_handler.obtainMessage();
-                    msg.what =100;
-                    Auto_lineup_and_dont_overaping_handler.sendMessage(msg);
-                    previous_scroll_value = scrollview1.getScrollY();
-                }
+//                if(previous_scroll_value != scrollview1.getScrollY()){
+//                    Message msg =  Auto_lineup_and_dont_overaping_handler.obtainMessage();
+//                    msg.what =100;
+//                    Auto_lineup_and_dont_overaping_handler.sendMessage(msg);
+//                    previous_scroll_value = scrollview1.getScrollY();
+//                }
 
 
             }
@@ -278,8 +297,13 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case 50: //새로운 레이아웃 생성
+                case 50: //레이아웃 이동 감지시
 
+                    ViewGroup select_view = findViewById(msg.arg1);
+                    RelativeLayout new_Linear_layout = button_creating_method2(
+                            ++last_creating_id_number, DB_buttons[msg.arg1][0],
+                            (int) select_view.getX(), (int) select_view.getY(), true);
+                    select_view.bringToFront();
                     break;
 
                 case 100: //스크롤 이동
@@ -336,7 +360,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
         }else if(display_height < 2000){ //QHD
 
-            first_line_getY += 23;
+            first_line_getY += 21;
 
         }else{ //UHD
 
@@ -344,8 +368,6 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         }
 
 
-        if(scrollview1.getScrollY() == 0)
-        Toast.makeText(getApplicationContext(),"first line"+first_line_getY+"",Toast.LENGTH_SHORT).show();
 
 
 
@@ -367,6 +389,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
             if (algorithm_continuous[i] == 0)
                 break;
         }
+        Toast.makeText(getApplicationContext(),"it was included",Toast.LENGTH_SHORT).show();
         return it_was_included;
     }
 
@@ -376,8 +399,9 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     public void arranging_algorithm_continuous_from_layout_location(int touched_id){
 
         int temp_array_num=0;
-        try{
+//        try{
             ViewGroup layout1 = findViewById(touched_id);
+
             if(layout1.getX() < convertPixelsToDp((float)display_width/2, this)) { //화면 중간을 넘어가면 배치 안하게
 
 
@@ -386,18 +410,19 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                     algorithm_continuous[calculation_array_num - 1] = touched_id;
                     Log.i("algorithm_continuous", calculation_array_num - 1+ "에 id가 " + touched_id + ", button type : " + DB_buttons[touched_id][0]);
 
-
                     if((DB_buttons[touched_id][0] == 6 || DB_buttons[touched_id][0] == 7) && !is_id_included_algorithm_continuous(touched_id+2000)){ //if문이라면 if문 끝나는것 하나 추가 && 이미 만들어 져있으면 만들지 말고
                         int end_of_if_condition = touched_id + 2000;
                         RelativeLayout new_Relative_layout = button_creating_method2(end_of_if_condition, 8,  (int) ((float)display_width*3/5) ,(int)layout1.getY(), true);
                         push_id_next_line(end_of_if_condition, calculation_array_num );
                         algorithm_continuous[calculation_array_num] = end_of_if_condition;
                         Log.i("algorithm_continuous", calculation_array_num + "에 id가 " + (end_of_if_condition));
-                }
+
+                    }
 
 
             }else{
 
+                Toast.makeText(getApplicationContext(),"no arrange"+touched_id,Toast.LENGTH_SHORT).show();
                 if(DB_buttons[touched_id][0] == 6 || DB_buttons[touched_id][0] == 7) {
                     //if나 for문이라면 끝나는것도 함께 지우기
                     int near_end_condition_id = find_end_condition_by_button_type_below(touched_id);
@@ -418,6 +443,8 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                 }else{
                     //조건 반목문이 아닌 일반 버튼은 그냥 삭제
                     delete_void_or_double_id(touched_id);
+                    ViewGroup delete_if_condition_child = findViewById(touched_id);
+                    dev_layout_main.removeView(delete_if_condition_child);
                 }
 
 
@@ -440,9 +467,9 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                 if (algorithm_continuous[i] == 0)
                     break;
             }
-        }catch (Exception e){
-            Log.e("arranging_algorithm", e+"");
-        }
+//        }catch (Exception e){
+//            Log.e("arranging_algorithm", e+"");
+//        }
 
     }
 
@@ -515,7 +542,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     }
 
     public boolean push_id_next_line(int touch_id, int pre_id_location){
-        try{
+//        try{
             delete_void_or_double_id(touch_id);
             int[] temp_algorithm_contiuous = new int[2000];
 
@@ -532,9 +559,9 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
             return true;
-        }catch(Exception e){
-            return false;
-        }
+//        }catch(Exception e){
+//            return false;
+//        }
     }
 
     public boolean delete_void_or_double_id(int touch_id){
@@ -619,6 +646,24 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
     }
 
+    public void unselected_button_creation(int touch_id){
+        Message msg =  Auto_lineup_and_dont_overaping_handler.obtainMessage();
+        msg.what =50;
+        msg.arg1 = touch_id;
+        Auto_lineup_and_dont_overaping_handler.sendMessage(msg);
+
+        StringBuilder a = new StringBuilder();
+        a.append(touch_id + ", unselect \n ");
+        for(int i=0;i<unselected_buttons.length;i++){
+            a.append(" i:");
+            a.append(unselected_buttons[i]);
+
+        }
+
+        Log.i("unselect",a+"");
+
+    }
+
 
 
 
@@ -660,7 +705,14 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
 
-    private RelativeLayout button_creating_method2(int id_numbers,int button_type, int location_x, int location_y, Boolean moving_hold_permanently){
+    public RelativeLayout button_creating_method2(int id_numbers,int button_type, int location_x, int location_y, Boolean moving_hold_permanently){
+
+        DB_buttons[id_numbers][0] = button_type; //버튼 종류
+        DB_buttons[id_numbers][1] = 0; //다음 연속된 버튼 id
+        DB_buttons[id_numbers][2] = location_x; //x위치
+        DB_buttons[id_numbers][3] = location_y; //y위치
+
+
 
         int this_layout_id_number = id_numbers;
         DB_buttons[id_numbers][0] = button_type; //버튼 종류 저장
@@ -670,6 +722,11 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,buttons_height*2);
         new_linear.setGravity(Gravity.CENTER_VERTICAL);
         new_linear.setLayoutParams(params);
+//        new_linear.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//            }
+//        });
 
 
         ImageView new_buttons = new ImageView(getApplicationContext());
@@ -713,7 +770,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) new_linear.getLayoutParams();
-//        layoutParams.width = 600;
+        layoutParams.width = buttons_height*13;
 
         new_linear.setLayoutParams(layoutParams);
 

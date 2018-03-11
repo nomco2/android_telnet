@@ -166,7 +166,7 @@ public class Button_allocate extends Activity{
         float text_length;
 
         if(display_height < 1000){ //HD
-            text_length = (int) (button_name.length()*buttons_height*1.7);
+            text_length = (int) (button_name.length()*buttons_height*1.5);
 //            new_linear.setPadding((int)(text_length/8),0,0,0);
 
         }else if(display_height < 1400){ //FHD
@@ -237,7 +237,7 @@ public class Button_allocate extends Activity{
 
         ImageView move_arrow = new ImageView(getApplicationContext());
         move_arrow.setId(this_layout_id_number+40000);
-        move_arrow.setLayoutParams(new ViewGroup.LayoutParams(200,200));
+        move_arrow.setLayoutParams(new ViewGroup.LayoutParams(buttons_height*2,buttons_height*2));
         move_arrow.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.move_arrow));
         move_arrow.bringToFront() ;
 
