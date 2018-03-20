@@ -73,14 +73,17 @@ public class Movable_Layout_Class_auto_lineup {
 
         mframe.setX(location_savaer.getFloat(location_xy[0], 100));
         mframe.setY(location_savaer.getFloat(location_xy[1], 100));
-        mframe.setScaleX(location_savaer.getFloat(present_scale_value_name, 1.0f));
-        mframe.setScaleY(location_savaer.getFloat(present_scale_value_name, 1.0f));
+//        mframe.setScaleX(location_savaer.getFloat(present_scale_value_name, 1.0f));
+//        mframe.setScaleY(location_savaer.getFloat(present_scale_value_name, 1.0f));
+        mframe.setScaleX(0.5f);
+        mframe.setScaleY(0.5f);
+
 
         if(moving_hold_permanently)
             mframe.setOnTouchListener(onTouchListener());
 
-        this_layout_id = layout_id;
 
+        this_layout_id = layout_id;
 
 
     }
@@ -120,6 +123,7 @@ public class Movable_Layout_Class_auto_lineup {
                 final int x = (int) event.getRawX();
                 final int y = (int) event.getRawY();
 
+
                 int pre_location_data = 0;
 
 
@@ -133,26 +137,32 @@ public class Movable_Layout_Class_auto_lineup {
                             yDelta = y - lParams.topMargin;
 
 
+
+
+
+
+
+
                             //오른쪽 안쓴 거에서 가져오면, 새로 생성해 주기
                             boolean is_this_layout_unselected = true;
                             int this_layout_button_type =  ((Algorithm_dev_activity) mainactivity_context).DB_buttons[this_layout_id][0];
                             for(int i=0;i<((Algorithm_dev_activity) mainactivity_context).button_type_numbers; i++){
                                 if(this_layout_id == ((Algorithm_dev_activity) mainactivity_context).unselected_buttons[i]) {
                                     is_this_layout_unselected = true;
-                                    Toast.makeText(mainactivity_context,"unselected id "+this_layout_id,Toast.LENGTH_SHORT).show();
+//                                    Toast.makeText(mainactivity_context,"unselected id "+this_layout_id,Toast.LENGTH_SHORT).show();
                                     break;
                                 }
 
                             }
 
 
-                            if(is_this_layout_unselected) {
-
-                                ((Algorithm_dev_activity) mainactivity_context).unselected_button_creation(this_layout_id);
-                                ((Algorithm_dev_activity) mainactivity_context).unselected_buttons[this_layout_button_type] = ((Algorithm_dev_activity) mainactivity_context).last_creating_id_number;
-//                                    Toast.makeText(mainactivity_context,i+"",Toast.LENGTH_SHORT).show();
-                                break;
-                            }
+//                            if(is_this_layout_unselected) {
+//
+//                                ((Algorithm_dev_activity) mainactivity_context).unselected_button_creation(this_layout_id);
+//                                ((Algorithm_dev_activity) mainactivity_context).unselected_buttons[this_layout_button_type] = ((Algorithm_dev_activity) mainactivity_context).last_creating_id_number;
+////                                    Toast.makeText(mainactivity_context,i+"",Toast.LENGTH_SHORT).show();
+//                                break;
+//                            }
 
 
                             mframe.bringToFront();
@@ -165,7 +175,7 @@ public class Movable_Layout_Class_auto_lineup {
                             location_xy_editor.putFloat(mloaction_xy[1], mframe.getY());
                             location_xy_editor.commit();
 
-                            Toast.makeText(mainactivity_context,"this id:"+this_layout_id+" last id:"+((Algorithm_dev_activity) mainactivity_context).last_creating_id_number,Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(mainactivity_context,"this id:"+this_layout_id+" last id:"+((Algorithm_dev_activity) mainactivity_context).last_creating_id_number,Toast.LENGTH_SHORT).show();
 
                             ((Algorithm_dev_activity) mainactivity_context).arranging_algorithm_continuous_from_layout_location(this_layout_id);
 //Toast.makeText(mainactivity_context,mframe.getX()+"",Toast.LENGTH_SHORT).show();

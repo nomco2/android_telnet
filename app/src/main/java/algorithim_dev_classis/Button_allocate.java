@@ -241,7 +241,11 @@ public class Button_allocate extends Activity{
         move_arrow.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.move_arrow));
         move_arrow.bringToFront() ;
 
-
+        ImageView move_arrow2 = new ImageView(getApplicationContext());
+        move_arrow2.setId(this_layout_id_number+50000);
+        move_arrow2.setLayoutParams(new ViewGroup.LayoutParams(buttons_height*2,buttons_height*2));
+        move_arrow2.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.move_arrow));
+        move_arrow2.bringToFront() ;
 
 
 
@@ -256,6 +260,7 @@ public class Button_allocate extends Activity{
 
         frame_linear.addView(move_arrow);
         frame_linear.addView(new_linear);
+        frame_linear.addView(move_arrow2);
         new_linear.addView(new_buttons);
         new_linear.addView(new_buttons2);
         new_linear.addView(new_texts);
@@ -298,14 +303,19 @@ public class Button_allocate extends Activity{
         for(int i =30000; i <= button_ids; i += 100){
             ImageView new_buttons2 = findViewById(i+20000);
             ImageView move_arrow = findViewById(i+40000);
+            ImageView move_arrow2 = findViewById(i+50000);
+
 
             try {
                 if (button_editing.isChecked()) {
                     new_buttons2.setVisibility(View.INVISIBLE);
                     move_arrow.setVisibility(View.VISIBLE);
+                    move_arrow2.setVisibility(View.VISIBLE);
+
                 } else {
                     new_buttons2.setVisibility(View.VISIBLE);
                     move_arrow.setVisibility(View.INVISIBLE);
+                    move_arrow2.setVisibility(View.INVISIBLE);
 
                 }
 

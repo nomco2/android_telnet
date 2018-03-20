@@ -216,39 +216,61 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
  */
 
 
-
-        /* 데이터 불러와서 배치하기 */
-        for(int i = 10; i < 17; i++){
-//            DB_buttons[i][0] = (i)%10; //버튼 종류
-//            DB_buttons[i][1] = i+1; //다음 연속된 버튼 id
-//            DB_buttons[i][2] = 10; //x위치
-//            DB_buttons[i][3] = i*buttons_height; //y위치
-
-            RelativeLayout new_Linear_layout = button_creating_method2(i, (i)%10, 10, i*buttons_height, true);
-            algorithm_continuous[i-10] = i; //알고리즘 순서
-            Log.i("algorithm_continuous "+(i-10), i+"");
-            last_creating_id_number = i; //마지막 id 번호
-        }
-        DB_buttons[0][0] = 1;
-        DB_buttons[0][1] = 10;
-        DB_buttons[0][2] = 10;
-        DB_buttons[0][3] = 100;
-        algorithm_continuous[0] = 10;
-
-
-
-
+ /* 기본 고정된 기능 들 배치 시키기 */
         unselected_buttons = new int[8];
         for(int i = 0; i < button_type_numbers; i++){
             int y_location = (i)*buttons_height; // (i-1)*80 +50
 
+            final RelativeLayout new_Linear_layout2 = button_creating_method2(i,i, (int) ((float)display_width*3/6),y_location, true);
+            unselected_buttons[i] = i;
+            last_creating_id_number++;
+            new_Linear_layout2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                    RelativeLayout new_Linear_layout = button_creating_method2(
+//                            last_creating_id_number, DB_buttons[last_creating_id_number][0],
+//                            (int) new_Linear_layout2.getX(), (int) new_Linear_layout2.getY(), true);
+//                    select_view.bringToFront();
+//                    new_Linear_layout2.setId(last_creating_id_number++);
+                    Toast.makeText(getApplicationContext(),new_Linear_layout2.getId()+"",Toast.LENGTH_SHORT).show();
 
-                    /* 기본 고정된 기능 들 배치 시키기 */
-//            RelativeLayout hold_layout = button_creating_method2(i,i, (int) ((float)display_width*3/6), y_location, false);
-                    /* 오른쪽 새로 생성 버튼 */
-            RelativeLayout new_Linear_layout2 = button_creating_method2(i + last_creating_id_number,i, (int) ((float)display_width*3/6),y_location, true);
-            unselected_buttons[i] = i + last_creating_id_number;
-         }
+                }
+            });
+
+        }
+
+
+
+//        last_creating_id_number = 100;
+        /* 데이터 불러와서 배치하기 */
+        for(int i = 0; i < button_type_numbers; i++){
+            DB_buttons[i][0] = (i)%10; //버튼 종류
+            DB_buttons[i][1] = i+1; //다음 연속된 버튼 id
+            DB_buttons[i][2] = 10; //x위치
+            DB_buttons[i][3] = i*buttons_height; //y위치
+
+            final RelativeLayout new_Linear_layout = button_creating_method2(i+last_creating_id_number, (i)%10, 10, i*buttons_height, true);
+            algorithm_continuous[i] = i+last_creating_id_number++; //알고리즘 순서
+            Log.i("algorithm_continuous "+(i-10), i+"");
+            new_Linear_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                    Toast.makeText(getApplicationContext(),new_Linear_layout.getWidth() + ":"+new_Linear_layout.getHeight(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),new_Linear_layout.getId()+"",Toast.LENGTH_SHORT).show();
+
+                }
+            });
+        }
+//        DB_buttons[0][0] = 1;
+//        DB_buttons[0][1] = 10;
+//        DB_buttons[0][2] = 10;
+//        DB_buttons[0][3] = 100;
+//        algorithm_continuous[0] = 10;
+
+
+
+
+
 
 
 
@@ -264,7 +286,10 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 //        auto_lineup_and_dont_overaping.setDaemon(true);
 //        auto_lineup_and_dont_overaping.start();
 
-
+        for(int i=0; i<button_type_numbers;i++) {
+            Log.i("unselected array", unselected_buttons[i]+"");
+        }
+        Log.i("last id number", last_creating_id_number+"");
 
     }
 
@@ -300,10 +325,12 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                 case 50: //레이아웃 이동 감지시
 
                     ViewGroup select_view = findViewById(msg.arg1);
+                    int y_location = (DB_buttons[msg.arg1][0])*buttons_height;
                     RelativeLayout new_Linear_layout = button_creating_method2(
-                            ++last_creating_id_number, DB_buttons[msg.arg1][0],
-                            (int) select_view.getX(), (int) select_view.getY(), true);
+                            last_creating_id_number++, DB_buttons[msg.arg1][0],
+                            (int) ((float)display_width*3/6), y_location, true);
                     select_view.bringToFront();
+                    unselected_buttons[DB_buttons[msg.arg1][0]] = last_creating_id_number;
                     break;
 
                 case 100: //스크롤 이동
@@ -376,21 +403,20 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 //        layout_placement_by_next_id(0, 10, display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY());
         layout_placement_by_next_id(0, 10, first_line_getY);
 
-        Log.i("first_line_getY", first_line_getY+"");
+//        Log.i("first_line_getY", first_line_getY+"");
     }
 
 
-    public boolean is_id_included_algorithm_continuous(int id){
-        boolean it_was_included = false;
-        for(int i =0; i<algorithm_continuous.length - 2; i++){
-            if(algorithm_continuous[i] == id){
-                it_was_included = true;
+    public boolean unselected_or_not(int id){
+        boolean unselected_or_not = false;
+        for(int i =0; i<button_type_numbers; i++){
+            if(unselected_buttons[i] == id){
+                unselected_or_not = true;
+                Toast.makeText(getApplicationContext(),"unselected id",Toast.LENGTH_SHORT).show();
             }
-            if (algorithm_continuous[i] == 0)
-                break;
+
         }
-        Toast.makeText(getApplicationContext(),"it was included",Toast.LENGTH_SHORT).show();
-        return it_was_included;
+        return unselected_or_not;
     }
 
 
@@ -401,6 +427,17 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         int temp_array_num=0;
 //        try{
             ViewGroup layout1 = findViewById(touched_id);
+//        Toast.makeText(getApplicationContext(),touched_id+"",Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getApplicationContext(),layout1.getWidth()+":"+layout1.getHeight(),Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(),layout1.getId()+"",Toast.LENGTH_SHORT).show();
+
+        if(unselected_or_not(touched_id)){
+            Message msg =  Auto_lineup_and_dont_overaping_handler.obtainMessage();
+            msg.what =50;
+            msg.arg1 = touched_id;
+
+            Auto_lineup_and_dont_overaping_handler.sendMessage(msg);
+        }
 
             if(layout1.getX() < convertPixelsToDp((float)display_width/2, this)) { //화면 중간을 넘어가면 배치 안하게
 
@@ -410,19 +447,26 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                     algorithm_continuous[calculation_array_num - 1] = touched_id;
                     Log.i("algorithm_continuous", calculation_array_num - 1+ "에 id가 " + touched_id + ", button type : " + DB_buttons[touched_id][0]);
 
-                    if((DB_buttons[touched_id][0] == 6 || DB_buttons[touched_id][0] == 7) && !is_id_included_algorithm_continuous(touched_id+2000)){ //if문이라면 if문 끝나는것 하나 추가 && 이미 만들어 져있으면 만들지 말고
-                        int end_of_if_condition = touched_id + 2000;
+                    if((DB_buttons[touched_id][0] == 6 || DB_buttons[touched_id][0] == 7) && unselected_or_not(touched_id)){ //if문이라면 if문 끝나는것 하나 추가 && 이미 만들어 져있으면 만들지 말고
+//                        int end_of_if_condition = touched_id + 2000;
+                        int end_of_if_condition = touched_id+1000;
+
                         RelativeLayout new_Relative_layout = button_creating_method2(end_of_if_condition, 8,  (int) ((float)display_width*3/5) ,(int)layout1.getY(), true);
                         push_id_next_line(end_of_if_condition, calculation_array_num );
                         algorithm_continuous[calculation_array_num] = end_of_if_condition;
-                        Log.i("algorithm_continuous", calculation_array_num + "에 id가 " + (end_of_if_condition));
+//                        Log.i("algorithm_continuous", calculation_array_num + "에 id가 " + (end_of_if_condition));
+                        for(int i =0; i<algorithm_continuous.length;i++){
+                            Log.i("algoritm :",i+":"+algorithm_continuous[i]);
+                            if(algorithm_continuous[i] == 0)
+                                break;
+                        }
 
                     }
 
 
             }else{
 
-                Toast.makeText(getApplicationContext(),"no arrange"+touched_id,Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(),"no arrange"+touched_id,Toast.LENGTH_SHORT).show();
                 if(DB_buttons[touched_id][0] == 6 || DB_buttons[touched_id][0] == 7) {
                     //if나 for문이라면 끝나는것도 함께 지우기
                     int near_end_condition_id = find_end_condition_by_button_type_below(touched_id);
@@ -603,7 +647,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
     public boolean layout_placement_by_next_id(int algorithm_continuous_number, int pre_layout_x, int pre_layout_y){
-        Log.i("db buttons : ", algorithm_continuous_number +"");
+//        Log.i("db buttons : ", algorithm_continuous_number +"");
 
         RelativeLayout layout1 = findViewById(algorithm_continuous[algorithm_continuous_number]);
         layout1.setX(pre_layout_x);
@@ -650,6 +694,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         Message msg =  Auto_lineup_and_dont_overaping_handler.obtainMessage();
         msg.what =50;
         msg.arg1 = touch_id;
+
         Auto_lineup_and_dont_overaping_handler.sendMessage(msg);
 
         StringBuilder a = new StringBuilder();
@@ -664,14 +709,6 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
     }
 
-
-
-
-
-
-    public void log_print(){
-        Log.i("test", "test");
-    }
 
 
 
@@ -719,7 +756,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
         RelativeLayout new_linear = new RelativeLayout(getApplicationContext());
         new_linear.setId(this_layout_id_number);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,buttons_height*2);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,buttons_height);
         new_linear.setGravity(Gravity.CENTER_VERTICAL);
         new_linear.setLayoutParams(params);
 //        new_linear.setOnClickListener(new View.OnClickListener() {
@@ -740,8 +777,8 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         new_texts.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_rectangle));
         new_texts.setTextColor(Color.rgb(0,0,0));
 //        new_texts.setTextSize(1,convertPixelsToDp(75,this));
-        new_texts.setTextSize(1,text_size);
-        select_background_text(new_texts, button_type, id_numbers);
+        new_texts.setTextSize(text_size);
+        select_background_text(new_linear, new_texts, button_type, id_numbers);
 
 
 
@@ -769,10 +806,11 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         new_linear.setY(location_y);
 
 
-        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) new_linear.getLayoutParams();
+//        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) new_linear.getLayoutParams();
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,buttons_height*2);
         layoutParams.width = buttons_height*13;
-
         new_linear.setLayoutParams(layoutParams);
+
 
         return new_linear;
     }
@@ -815,7 +853,9 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         }
     }
 
-    private void select_background_text(TextView new_texts, int button_type, int id_number){
+    private void select_background_text(ViewGroup layout, TextView new_texts, int button_type, int id_number){
+//        layout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 10));
+        new_texts.setTextSize(1,text_size);
         switch (button_type){
             case 99 :
                 new_texts.setText("시 작  지 점");
