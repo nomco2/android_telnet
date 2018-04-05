@@ -55,6 +55,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
     public int[][] DB_buttons;
     public int[] algorithm_continuous;
     public int last_creating_id_number = 0;
+    private int last_creating_line = 0;
     public int[] unselected_buttons;
     public int button_type_numbers=8;
 
@@ -163,50 +164,50 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         first_line.addView(first_line_text_layout);
 
         //나머지 줄 자동 생성
-        languageColors =  new LanguageColors();
-        for(int i =1; i<20 ; i++){
-            LinearLayout new_linear = new LinearLayout(getApplicationContext());
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, buttons_height);
-            params.gravity = Gravity.CENTER;
-            new_linear.setOrientation(LinearLayout.HORIZONTAL);
-            new_linear.setLayoutParams(params);
-            new_linear.setBackgroundColor(Color.rgb(0,0,0));
-
-            ImageView new_line = new ImageView(getApplicationContext());
-//            new_line.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100));
-            new_line.setLayoutParams(new ViewGroup.LayoutParams(  (int) ((float)display_width/2), ViewGroup.LayoutParams.MATCH_PARENT));
-
-            new_line.setImageDrawable(getResources().getDrawable(R.drawable.line_image));
-            new_line.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.myshape));
-            new_line.setId(90000 + i);
-            final int temp_i = i;
-            new_line.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(getApplicationContext(),temp_i+"", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-
-            TextView line_number = new TextView(getApplicationContext());
-            line_number.setLayoutParams(new ViewGroup.LayoutParams((int) convertPixelsToDp((float)display_width/10, this), ViewGroup.LayoutParams.MATCH_PARENT));
-            line_number.setText(i+"");
-            line_number.setBackgroundColor(Color.rgb(0,0,0));
-            line_number.setTextSize(text_size/4);
-
-
-
-
-            new_linear.addView(line_number);
-            new_linear.addView(new_line);
-
-
-            first_line.addView(new_linear);
-            GradientDrawable bgShape = (GradientDrawable) new_line.getBackground();
-            String selectedLanguage = "nomal" + i%2;
-            bgShape.setColor(languageColors.getColor(selectedLanguage));
-
-        }
+//        languageColors =  new LanguageColors();
+//        for(int i =1; i<20 ; i++){
+//            LinearLayout new_linear = new LinearLayout(getApplicationContext());
+//            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, buttons_height);
+//            params.gravity = Gravity.CENTER;
+//            new_linear.setOrientation(LinearLayout.HORIZONTAL);
+//            new_linear.setLayoutParams(params);
+//            new_linear.setBackgroundColor(Color.rgb(0,0,0));
+//
+//            ImageView new_line = new ImageView(getApplicationContext());
+////            new_line.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100));
+//            new_line.setLayoutParams(new ViewGroup.LayoutParams(  (int) ((float)display_width/2), ViewGroup.LayoutParams.MATCH_PARENT));
+//
+//            new_line.setImageDrawable(getResources().getDrawable(R.drawable.line_image));
+//            new_line.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.myshape));
+//            new_line.setId(90000 + i);
+//            final int temp_i = i;
+//            new_line.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Toast.makeText(getApplicationContext(),temp_i+"", Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//
+//
+//            TextView line_number = new TextView(getApplicationContext());
+//            line_number.setLayoutParams(new ViewGroup.LayoutParams((int) convertPixelsToDp((float)display_width/10, this), ViewGroup.LayoutParams.MATCH_PARENT));
+//            line_number.setText(i+"");
+//            line_number.setBackgroundColor(Color.rgb(0,0,0));
+//            line_number.setTextSize(text_size/4);
+//
+//
+//
+//
+//            new_linear.addView(line_number);
+//            new_linear.addView(new_line);
+//
+//
+//            first_line.addView(new_linear);
+//            GradientDrawable bgShape = (GradientDrawable) new_line.getBackground();
+//            String selectedLanguage = "nomal" + i%2;
+//            bgShape.setColor(languageColors.getColor(selectedLanguage));
+//
+//        }
 
 /*
  일반 id 배치
@@ -224,18 +225,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
             final RelativeLayout new_Linear_layout2 = button_creating_method2(i,i, (int) ((float)display_width*3/6),y_location, true);
             unselected_buttons[i] = i;
             last_creating_id_number++;
-            new_Linear_layout2.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-//                    RelativeLayout new_Linear_layout = button_creating_method2(
-//                            last_creating_id_number, DB_buttons[last_creating_id_number][0],
-//                            (int) new_Linear_layout2.getX(), (int) new_Linear_layout2.getY(), true);
-//                    select_view.bringToFront();
-//                    new_Linear_layout2.setId(last_creating_id_number++);
-                    Toast.makeText(getApplicationContext(),new_Linear_layout2.getId()+"",Toast.LENGTH_SHORT).show();
 
-                }
-            });
 
         }
 
@@ -252,15 +242,10 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
             final RelativeLayout new_Linear_layout = button_creating_method2(i+last_creating_id_number, (i)%10, 10, i*buttons_height, true);
             algorithm_continuous[i] = i+last_creating_id_number++; //알고리즘 순서
             Log.i("algorithm_continuous "+(i-10), i+"");
-            new_Linear_layout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-//                    Toast.makeText(getApplicationContext(),new_Linear_layout.getWidth() + ":"+new_Linear_layout.getHeight(),Toast.LENGTH_SHORT).show();
-                    Toast.makeText(getApplicationContext(),new_Linear_layout.getId()+"",Toast.LENGTH_SHORT).show();
 
-                }
-            });
         }
+        last_creating_id_number += 10;
+        line_creater(last_creating_id_number);
 //        DB_buttons[0][0] = 1;
 //        DB_buttons[0][1] = 10;
 //        DB_buttons[0][2] = 10;
@@ -327,10 +312,10 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                     ViewGroup select_view = findViewById(msg.arg1);
                     int y_location = (DB_buttons[msg.arg1][0])*buttons_height;
                     RelativeLayout new_Linear_layout = button_creating_method2(
-                            last_creating_id_number++, DB_buttons[msg.arg1][0],
+                            last_creating_id_number, DB_buttons[msg.arg1][0],
                             (int) ((float)display_width*3/6), y_location, true);
                     select_view.bringToFront();
-                    unselected_buttons[DB_buttons[msg.arg1][0]] = last_creating_id_number;
+                    unselected_buttons[DB_buttons[msg.arg1][0]] = last_creating_id_number++;
                     break;
 
                 case 100: //스크롤 이동
@@ -412,7 +397,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         for(int i =0; i<button_type_numbers; i++){
             if(unselected_buttons[i] == id){
                 unselected_or_not = true;
-                Toast.makeText(getApplicationContext(),"unselected id",Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(),"unselected id",Toast.LENGTH_SHORT).show();
             }
 
         }
@@ -435,10 +420,14 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
             Message msg =  Auto_lineup_and_dont_overaping_handler.obtainMessage();
             msg.what =50;
             msg.arg1 = touched_id;
+//            Toast.makeText(getApplicationContext(),touched_id+":last id num",Toast.LENGTH_SHORT).show();
 
             Auto_lineup_and_dont_overaping_handler.sendMessage(msg);
-        }
 
+
+        }
+        for(int i=0;i<unselected_buttons.length;i++)
+            Log.i("unselected_buttons",i + ":" + unselected_buttons[i]);
             if(layout1.getX() < convertPixelsToDp((float)display_width/2, this)) { //화면 중간을 넘어가면 배치 안하게
 
 
@@ -511,9 +500,15 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                 if (algorithm_continuous[i] == 0)
                     break;
             }
+
+            /* line exceed */
+
+
+
 //        }catch (Exception e){
 //            Log.e("arranging_algorithm", e+"");
 //        }
+
 
     }
 
@@ -690,6 +685,60 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
     }
 
+
+    private void line_creater(int line_number){
+
+
+        languageColors =  new LanguageColors();
+        for(int i =1; i<line_number ; i++){
+            LinearLayout new_linear = new LinearLayout(getApplicationContext());
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, buttons_height);
+            params.gravity = Gravity.CENTER;
+            new_linear.setOrientation(LinearLayout.HORIZONTAL);
+            new_linear.setLayoutParams(params);
+            new_linear.setBackgroundColor(Color.rgb(0,0,0));
+
+            ImageView new_line = new ImageView(getApplicationContext());
+//            new_line.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100));
+            new_line.setLayoutParams(new ViewGroup.LayoutParams(  (int) ((float)display_width/2), ViewGroup.LayoutParams.MATCH_PARENT));
+
+            new_line.setImageDrawable(getResources().getDrawable(R.drawable.line_image));
+            new_line.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.myshape));
+            new_line.setId(90000 + i);
+            final int temp_i = i;
+            new_line.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getApplicationContext(),temp_i+"", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
+            TextView line_number2 = new TextView(getApplicationContext());
+            line_number2.setLayoutParams(new ViewGroup.LayoutParams((int) convertPixelsToDp((float)display_width/10, this), ViewGroup.LayoutParams.MATCH_PARENT));
+            line_number2.setText(i+"");
+            line_number2.setBackgroundColor(Color.rgb(0,0,0));
+            line_number2.setTextSize(text_size/4);
+
+
+
+
+            new_linear.addView(line_number2);
+            new_linear.addView(new_line);
+
+
+            first_line.addView(new_linear);
+            GradientDrawable bgShape = (GradientDrawable) new_line.getBackground();
+            String selectedLanguage = "nomal" + i%2;
+            bgShape.setColor(languageColors.getColor(selectedLanguage));
+
+        }
+
+    }
+
+
+
+
     public void unselected_button_creation(int touch_id){
         Message msg =  Auto_lineup_and_dont_overaping_handler.obtainMessage();
         msg.what =50;
@@ -708,6 +757,8 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         Log.i("unselect",a+"");
 
     }
+
+
 
 
 
