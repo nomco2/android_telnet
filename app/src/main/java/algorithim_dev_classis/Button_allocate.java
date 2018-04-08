@@ -3,11 +3,13 @@ package algorithim_dev_classis;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -27,8 +30,10 @@ import com.example.kimfamily.arduino_car_nodemcu.R;
 import java.util.ArrayList;
 
 import database.adapter.CustomAdapter;
+import database.conf.Constants;
 import database.data.InfoClass;
 import database.database.DbOpenHelper;
+import database.database.Project_button_list_DB;
 import database.util.DLog;
 import movable_classis.Movable_Layout_Class;
 import movable_classis.Movable_Layout_Class_auto_lineup;
@@ -65,6 +70,13 @@ public class Button_allocate extends Activity{
 
     float line_size;
 
+
+    /* 프로젝트 버튼 리스트 sharedpreference 관련 */
+    SharedPreferences sharedPreferences_savaer;
+    SharedPreferences.Editor sharedPreferences_editor;
+    private ViewGroup mframe;
+    private float loaction_x;
+    private float loaction_y;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -126,6 +138,15 @@ public class Button_allocate extends Activity{
         }
 
 
+
+
+        sharedPreferences_savaer = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences_editor = sharedPreferences_savaer.edit();
+
+
+
+
+
         button_allocate_main_layout = (RelativeLayout) findViewById(R.id.button_allocate_main_layout);
 
         button_creation = (ImageButton) findViewById(R.id.button_creation);
@@ -133,10 +154,38 @@ public class Button_allocate extends Activity{
             @Override
             public void onClick(View v) {
                 button_ids += 100;
-                button_creating_method2(button_ids, "버튼11",display_width/2, button_ids % 30000, true);
+
+
+                ViewGroup frame = button_creating_method2(button_ids, "버튼11",display_width/2, button_ids % 30000, true);
+
+                StringBuilder last_id_number = new StringBuilder(project_title.getText());
+                last_id_number.append(button_ids);
+
+                StringBuilder button_name = new StringBuilder(project_title.getText());
+                button_name.append(button_ids);
+                button_name.append("button_name");
+
+
+                StringBuilder location_x_string = new StringBuilder(project_title.getText());
+                location_x_string.append(button_ids);
+                location_x_string.append("x");
+
+                StringBuilder location_y_string = new StringBuilder(project_title.getText());
+                location_y_string.append(button_ids);
+                location_y_string.append("y");
+
+                sharedPreferences_editor.putInt(last_id_number.toString(), button_ids);
+                sharedPreferences_editor.putString(button_name.toString(), button_ids);
+
+                sharedPreferences_editor.putFloat(location_x_string.toString(), frame.getX());
+                sharedPreferences_editor.putFloat(location_y_string.toString(), frame.getY());
+
 
             }
         });
+
+
+
 
         button_editing = (CheckBox) findViewById(R.id.button_editing);
         button_editing.setOnClickListener(new View.OnClickListener() {
@@ -145,11 +194,28 @@ public class Button_allocate extends Activity{
 
                 visible_or_not();
 
+
+
+
+
             }
         });
 
+
         visible_or_not();
-    }
+
+
+
+
+
+    }//oncreate 끝
+
+
+
+
+
+
+
 
 
 

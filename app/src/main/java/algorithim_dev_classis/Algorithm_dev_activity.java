@@ -163,60 +163,6 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         first_line_text_layout.addView(first_line_text);
         first_line.addView(first_line_text_layout);
 
-        //나머지 줄 자동 생성
-//        languageColors =  new LanguageColors();
-//        for(int i =1; i<20 ; i++){
-//            LinearLayout new_linear = new LinearLayout(getApplicationContext());
-//            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, buttons_height);
-//            params.gravity = Gravity.CENTER;
-//            new_linear.setOrientation(LinearLayout.HORIZONTAL);
-//            new_linear.setLayoutParams(params);
-//            new_linear.setBackgroundColor(Color.rgb(0,0,0));
-//
-//            ImageView new_line = new ImageView(getApplicationContext());
-////            new_line.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100));
-//            new_line.setLayoutParams(new ViewGroup.LayoutParams(  (int) ((float)display_width/2), ViewGroup.LayoutParams.MATCH_PARENT));
-//
-//            new_line.setImageDrawable(getResources().getDrawable(R.drawable.line_image));
-//            new_line.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.myshape));
-//            new_line.setId(90000 + i);
-//            final int temp_i = i;
-//            new_line.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Toast.makeText(getApplicationContext(),temp_i+"", Toast.LENGTH_SHORT).show();
-//                }
-//            });
-//
-//
-//            TextView line_number = new TextView(getApplicationContext());
-//            line_number.setLayoutParams(new ViewGroup.LayoutParams((int) convertPixelsToDp((float)display_width/10, this), ViewGroup.LayoutParams.MATCH_PARENT));
-//            line_number.setText(i+"");
-//            line_number.setBackgroundColor(Color.rgb(0,0,0));
-//            line_number.setTextSize(text_size/4);
-//
-//
-//
-//
-//            new_linear.addView(line_number);
-//            new_linear.addView(new_line);
-//
-//
-//            first_line.addView(new_linear);
-//            GradientDrawable bgShape = (GradientDrawable) new_line.getBackground();
-//            String selectedLanguage = "nomal" + i%2;
-//            bgShape.setColor(languageColors.getColor(selectedLanguage));
-//
-//        }
-
-/*
- 일반 id 배치
- id 0~10 = 고정된 배치 -> 1씩 증가
- id + 3000 = for문 끝
- id + 2000 = if문 끝
- */
-
-
  /* 기본 고정된 기능 들 배치 시키기 */
         unselected_buttons = new int[8];
         for(int i = 0; i < button_type_numbers; i++){
