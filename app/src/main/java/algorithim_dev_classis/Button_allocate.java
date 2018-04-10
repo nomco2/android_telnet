@@ -15,7 +15,9 @@ import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -77,6 +79,11 @@ public class Button_allocate extends Activity{
     private ViewGroup mframe;
     private float loaction_x;
     private float loaction_y;
+
+    private ViewGroup button_name_box;
+    private EditText button_name_edit_text;
+    private Button button_name_confirm;
+    private Button button_name_cancel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -146,6 +153,10 @@ public class Button_allocate extends Activity{
 
 
 
+        button_name_box = (ViewGroup) findViewById(R.id.button_name_box);
+        button_name_edit_text = (EditText) findViewById(R.id.button_name_edit_text);
+        button_name_confirm = (Button)  findViewById(R.id.button_name_confirm);
+        button_name_cancel = (Button)  findViewById(R.id.button_name_cancel);
 
         button_allocate_main_layout = (RelativeLayout) findViewById(R.id.button_allocate_main_layout);
 
@@ -155,8 +166,21 @@ public class Button_allocate extends Activity{
             public void onClick(View v) {
                 button_ids += 100;
 
+                button_name_box.setVisibility(View.VISIBLE);
+                button_name_edit_text.setText("");
+                button_name_edit_text.requestFocus();
 
-                ViewGroup frame = button_creating_method2(button_ids, "버튼11",display_width/2, button_ids % 30000, true);
+
+            }
+        });
+
+        //버튼이름 넣고 확인 버튼 누를때
+        button_name_confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String button_name_text = button_name_edit_text.getText().toString();
+                ViewGroup frame = button_creating_method2(button_ids, button_name_text ,display_width/2, display_height/2, true);
 
                 StringBuilder last_id_number = new StringBuilder(project_title.getText());
                 last_id_number.append(button_ids);
@@ -175,16 +199,25 @@ public class Button_allocate extends Activity{
                 location_y_string.append("y");
 
                 sharedPreferences_editor.putInt(last_id_number.toString(), button_ids);
-                sharedPreferences_editor.putString(button_name.toString(), button_ids);
+                sharedPreferences_editor.putString(button_name.toString(), button_name_text);
 
                 sharedPreferences_editor.putFloat(location_x_string.toString(), frame.getX());
                 sharedPreferences_editor.putFloat(location_y_string.toString(), frame.getY());
+
+                button_name_box.setVisibility(View.INVISIBLE);
 
 
             }
         });
 
+        button_name_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                button_name_box.setVisibility(View.INVISIBLE);
+
+            }
+        });
 
 
         button_editing = (CheckBox) findViewById(R.id.button_editing);
@@ -193,9 +226,6 @@ public class Button_allocate extends Activity{
             public void onClick(View v) {
 
                 visible_or_not();
-
-
-
 
 
             }
@@ -370,7 +400,7 @@ public class Button_allocate extends Activity{
             ImageView new_buttons2 = findViewById(i+20000);
             ImageView move_arrow = findViewById(i+40000);
             ImageView move_arrow2 = findViewById(i+50000);
-
+            button_name_box.setVisibility(View.INVISIBLE);
 
             try {
                 if (button_editing.isChecked()) {

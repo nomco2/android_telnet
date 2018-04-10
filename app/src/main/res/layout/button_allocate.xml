@@ -62,4 +62,82 @@
     </RelativeLayout>
 
 
+
+
+    <!-- 버튼 이름 받기 레이아웃 -->
+    <RelativeLayout
+        android:id="@+id/button_name_box"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        android:gravity="center">
+        <LinearLayout
+            android:padding="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/button_editing_check"
+            android:weightSum="1"
+            >
+            <!-- 제목 부분 텍스트 부분 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_weight="0.1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="생성할 버튼의 이름을 넣어주세요."/>
+
+            </LinearLayout>
+
+                <!-- 에디트 텍스트 부분 -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_weight="0.7">
+
+
+                <EditText
+                    android:id="@+id/button_name_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorPrimary"
+                    android:textSize="30dp"
+                    android:textColor="@color/colorAccent"
+                    android:hint="버튼이름"/>
+
+            </LinearLayout>
+
+
+            <!-- 저장 / 취소 버튼 부분 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_weight="0.2">
+                <Button
+                    android:id="@+id/button_name_confirm"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="확인"
+                    android:layout_weight="0.5"/>
+                <Button
+                    android:id="@+id/button_name_cancel"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="취소"
+                    android:layout_weight="0.5"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
 </RelativeLayout>
