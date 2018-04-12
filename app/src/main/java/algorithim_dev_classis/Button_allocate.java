@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import database.adapter.CustomAdapter;
 import database.conf.Constants;
 import database.data.InfoClass;
+import database.data.InfoClass_button_db;
 import database.database.DbOpenHelper;
 import database.database.Project_button_list_DB;
 import database.util.DLog;
@@ -85,6 +86,17 @@ public class Button_allocate extends Activity{
     private Button button_name_confirm;
     private Button button_name_cancel;
 
+
+    /* 프로젝트 버튼 리스트 DB */
+    private Project_button_list_DB mProject_button_list_DB;
+    private Cursor mCursor_db;
+    private InfoClass_button_db mInfoClass_db;
+    private ArrayList<InfoClass_button_db> mInfoArray_db;
+    private CustomAdapter mAdapter_db;
+
+    public String this_project_name = "";
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +106,7 @@ public class Button_allocate extends Activity{
         project_list_num = intent.getExtras().getInt("project_list_num");
 //        Toast.makeText(this, project_list_num + "", Toast.LENGTH_LONG).show();
 
+        /* 현재 프로젝트 이름 가져오기 */
         mDbOpenHelper = new DbOpenHelper(this);
         mDbOpenHelper.open();
         mCursor = null;
@@ -108,11 +121,46 @@ public class Button_allocate extends Activity{
 
             while_count++;
             if (while_count == project_list_num) {
-                project_title.setText(mCursor.getString(mCursor.getColumnIndex("name")));
+                this_project_name = mCursor.getString(mCursor.getColumnIndex("name"));
+                project_title.setText(this_project_name);
             }
         }
 
         mCursor.close();
+
+
+
+
+        /* DB에 버튼 리스트 불러오기 */
+
+        mProject_button_list_DB = new Project_button_list_DB(this, this_project_name);
+        mProject_button_list_DB.open();
+        mInfoArray_db = new ArrayList<InfoClass_button_db>();
+
+        mCursor_db = null;
+        mCursor_db = mProject_button_list_DB.getAllColumns();
+
+        while (mCursor_db.moveToNext()) {
+
+            mInfoClass_db = new InfoClass_button_db(
+                    mCursor_db.getInt(mCursor_db.getColumnIndex("_id")),
+                    mCursor_db.getString(mCursor_db.getColumnIndex("name")),
+                    mCursor_db.getString(mCursor_db.getColumnIndex("contact")),
+                    mCursor_db.getString(mCursor_db.getColumnIndex("email"))
+            );
+
+            mInfoArray_db.add(mInfoClass_db);
+        }
+
+        mCursor_db.close();
+        Toast.makeText(this, this_project_name + " : "+  mInfoArray_db.toString(),Toast.LENGTH_LONG).show();
+
+
+
+
+
+
+        /* 화면 크기에 따라 버튼 크기 조절하기 */
 
 
         dm = getApplicationContext().getResources().getDisplayMetrics();
@@ -123,7 +171,7 @@ public class Button_allocate extends Activity{
         resourceId = getApplicationContext().getResources().getIdentifier("status_bar_height", "dimen", "android");
 
         line_size = convertPixelsToDp(display_height / 6, getApplicationContext());
-        Toast.makeText(getApplicationContext(),display_height +"",Toast.LENGTH_LONG).show();
+//        Toast.makeText(getApplicationContext(),display_height +"",Toast.LENGTH_LONG).show();
 
 
         if(display_height < 1000){ //HD
@@ -146,6 +194,9 @@ public class Button_allocate extends Activity{
 
 
 
+
+
+        /* 버튼 추가 삭제 관련 */
 
         sharedPreferences_savaer = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences_editor = sharedPreferences_savaer.edit();
@@ -206,6 +257,8 @@ public class Button_allocate extends Activity{
 
                 button_name_box.setVisibility(View.INVISIBLE);
 
+                //button db에 추가
+                mProject_button_list_DB.insertColumn("김태희2","010000011111" , "angel@google.c1om");
 
             }
         });
@@ -215,6 +268,15 @@ public class Button_allocate extends Activity{
             public void onClick(View v) {
 
                 button_name_box.setVisibility(View.INVISIBLE);
+//                boolean result = mProject_button_list_DB.deleteColumn(position + 1);
+//                if(result){
+//                    mInfoArray_db.remove(position);
+//                    mAdapter.setArrayList(mInfoArray_db);
+//                    mAdapter.notifyDataSetChanged();
+//                }else {
+//                    Toast.makeText(getApplicationContext(), "INDEX를 확인해 주세요.",
+//                            Toast.LENGTH_LONG).show();
+//                }
 
             }
         });
@@ -230,6 +292,9 @@ public class Button_allocate extends Activity{
 
             }
         });
+
+
+
 
 
         visible_or_not();
@@ -254,9 +319,14 @@ public class Button_allocate extends Activity{
 
         final int this_layout_id_number = id_numbers;
 
+        LinearLayout line_two_for_setting_buttons = new LinearLayout((getApplicationContext()));
+        line_two_for_setting_buttons.setOrientation(LinearLayout.VERTICAL);
+
+        //line one
         LinearLayout frame_linear = new LinearLayout((getApplicationContext()));
         frame_linear.setOrientation(LinearLayout.HORIZONTAL);
         RelativeLayout new_linear = new RelativeLayout(getApplicationContext());
+
 
 
         float text_length;
@@ -346,13 +416,38 @@ public class Button_allocate extends Activity{
 
 
 
+        // line two
+        LinearLayout line_two_setting_buttons = new LinearLayout((getApplicationContext()));
+        line_two_setting_buttons.setOrientation(LinearLayout.HORIZONTAL);
+
+        Button name_edit = new Button(getApplicationContext());
+        name_edit.setText("수정");
+        Button delete_btn = new Button(getApplicationContext());
+        delete_btn.setText("삭제");
+        Button copy_btn = new Button(getApplicationContext());
+        copy_btn.setText("복사");
+
+
+        line_two_setting_buttons.addView(name_edit);
+        line_two_setting_buttons.addView(delete_btn);
+        line_two_setting_buttons.addView(copy_btn);
+
+
+
+
+
+
+
 
         String[] new_buttons_location = new String[2];
         new_buttons_location[0] = "new_button_x" + this_layout_id_number;
         new_buttons_location[1] = "new_button_y" + this_layout_id_number;
         String scale_size = "scale_size" + this_layout_id_number;
         Movable_Layout_Class new_movable_button =
-                new Movable_Layout_Class(this, button_allocate_main_layout, frame_linear, new_buttons_location, scale_size, moving_hold_permanently);
+                new Movable_Layout_Class(this, button_allocate_main_layout, line_two_for_setting_buttons, new_buttons_location, scale_size, moving_hold_permanently);
+
+        line_two_for_setting_buttons.addView(frame_linear);
+        line_two_for_setting_buttons.addView(line_two_setting_buttons);
 
         frame_linear.addView(move_arrow);
         frame_linear.addView(new_linear);
@@ -361,9 +456,11 @@ public class Button_allocate extends Activity{
         new_linear.addView(new_buttons2);
         new_linear.addView(new_texts);
 
-        button_allocate_main_layout.addView(frame_linear);
-        frame_linear.setX(location_x);
-        frame_linear.setY(location_y);
+
+
+        button_allocate_main_layout.addView(line_two_for_setting_buttons);
+        line_two_for_setting_buttons.setX(location_x);
+        line_two_for_setting_buttons.setY(location_y);
 
 
 

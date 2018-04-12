@@ -16,11 +16,7 @@ public class Project_button_list_DB {
 	private DatabaseHelper mDBHelper;
 	private Context mCtx;
 
-	public void Project_button_list_DB(String project_name){
 
-		DATABASE_NAME = project_name;
-
-	}
 
 	private class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -45,8 +41,9 @@ public class Project_button_list_DB {
 		}
 	}
 
-	public Project_button_list_DB(Context context){
+	public Project_button_list_DB(Context context, String Project_name){
 		this.mCtx = context;
+		DATABASE_NAME = Project_name;
 	}
 
 	public Project_button_list_DB open() throws SQLException {
