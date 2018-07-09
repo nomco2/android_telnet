@@ -29,14 +29,14 @@ public class Project_button_list_DB {
 		// 최초 DB를 만들때 한번만 호출된다.
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			db.execSQL(DataBases.CreateDB._CREATE);
+			db.execSQL(DataBases.Project_list._CREATE);
 
 		}
 
 		// 버전이 업데이트 되었을 경우 DB를 다시 만들어 준다.
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			db.execSQL("DROP TABLE IF EXISTS "+DataBases.CreateDB._TABLENAME);
+			db.execSQL("DROP TABLE IF EXISTS "+DataBases.Project_list.project_name);
 			onCreate(db);
 		}
 	}
@@ -59,51 +59,52 @@ public class Project_button_list_DB {
 
 
 	// 프로젝트 db에 넣기
-	public long create_project_db_insert(String project_name, String date_time, String maker_name){
+	public long create_project_db_insert(String project_name, String button_name, String date, String x_location, String y_location, String coding_contents){
 		ContentValues values = new ContentValues();
-		values.put(DataBases.Project_list.PROJECT_NAME, project_name);
-		values.put(DataBases.Project_list.DATE_TIME, date_time);
-		values.put(DataBases.Project_list.MAKER_NAME, maker_name);
-		return mDB.insert(DataBases.Project_list._TABLENAME, null, values);
+//		values.put(DataBases.Project_list.project_name, project_name);
+		values.put(DataBases.Project_list.project_name, project_name);
+		values.put(DataBases.Project_list.button_name, button_name);
+		values.put(DataBases.Project_list.date, date);
+		values.put(DataBases.Project_list.x_location, x_location);
+		values.put(DataBases.Project_list.y_location, y_location);
+		values.put(DataBases.Project_list.coding_contents, coding_contents);
+
+//		return mDB.insert(DataBases.Project_list.project_name, null, values);
+		return mDB.insert("project_name", null, values);
+
 	}
 
-
-	// Insert DB
-	public long insertColumn(String name, String contact, String email){
-		ContentValues values = new ContentValues();
-		values.put(DataBases.CreateDB.NAME, name);
-		values.put(DataBases.CreateDB.CONTACT, contact);
-		values.put(DataBases.CreateDB.EMAIL, email);
-		return mDB.insert(DataBases.CreateDB._TABLENAME, null, values);
-	}
 
 	// Update DB
-	public boolean updateColumn(long id , String name, String contact, String email){
+	public boolean updateColumn(long id , String project_name, String button_name, String date, int x_location, int y_location, String coding_contents){
 		ContentValues values = new ContentValues();
-		values.put(DataBases.CreateDB.NAME, name);
-		values.put(DataBases.CreateDB.CONTACT, contact);
-		values.put(DataBases.CreateDB.EMAIL, email);
-		return mDB.update(DataBases.CreateDB._TABLENAME, values, "_id="+id, null) > 0;
+		values.put(DataBases.Project_list.project_name, project_name);
+		values.put(DataBases.Project_list.button_name, button_name);
+		values.put(DataBases.Project_list.date, date);
+		values.put(DataBases.Project_list.x_location, x_location);
+		values.put(DataBases.Project_list.y_location, y_location);
+		values.put(DataBases.Project_list.coding_contents, coding_contents);
+		return mDB.update(DataBases.Project_list.project_name, values, "_id="+id, null) > 0;
 	}
 
 	// Delete ID
 	public boolean deleteColumn(long id){
-		return mDB.delete(DataBases.CreateDB._TABLENAME, "_id="+id, null) > 0;
+		return mDB.delete(DataBases.Project_list.project_name, "_id="+id, null) > 0;
 	}
 	
 	// Delete Contact
 	public boolean deleteColumn(String number){
-		return mDB.delete(DataBases.CreateDB._TABLENAME, "contact="+number, null) > 0;
+		return mDB.delete(DataBases.Project_list.project_name, "contact="+number, null) > 0;
 	}
 	
 	// Select All
 	public Cursor getAllColumns(){
-		return mDB.query(DataBases.CreateDB._TABLENAME, null, null, null, null, null, null);
+		return mDB.query(DataBases.Project_list.project_name, null, null, null, null, null, null);
 	}
 
 	// ID 컬럼 얻어 오기
 	public Cursor getColumn(long id){
-		Cursor c = mDB.query(DataBases.CreateDB._TABLENAME, null,
+		Cursor c = mDB.query(DataBases.Project_list.project_name, null,
 				"_id="+id, null, null, null, null);
 		if(c != null && c.getCount() != 0)
 			c.moveToFirst();

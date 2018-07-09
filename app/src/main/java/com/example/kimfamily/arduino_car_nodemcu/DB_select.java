@@ -157,12 +157,13 @@ public class DB_select extends Activity {
     public void onClick(View v){
         switch (v.getId()) {
             case R.id.btn_add:
-                mDbOpenHelper.create_project_db_insert
+                mDbOpenHelper.insertColumn
                         (
                                 mEditTexts[Constants.NAME].getText().toString().trim(),
                                 mEditTexts[Constants.CONTACT].getText().toString().trim(),
                                 mEditTexts[Constants.EMAIL].getText().toString().trim()
                         );
+
 
                 mInfoArray.clear();
 
@@ -172,6 +173,10 @@ public class DB_select extends Activity {
                 mAdapter.notifyDataSetChanged();
 
                 mCursor.close();
+
+
+
+
 
                 break;
 

@@ -8,9 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class DbOpenHelper {
+public class DbOpenHelper2 {
 
-	private static final String DATABASE_NAME = "addressbook.db";
+	private static final String DATABASE_NAME = "";
 	private static final int DATABASE_VERSION = 1;
 	public static SQLiteDatabase mDB;
 	private DatabaseHelper mDBHelper;
@@ -39,11 +39,11 @@ public class DbOpenHelper {
 		}
 	}
 
-	public DbOpenHelper(Context context){
+	public DbOpenHelper2(Context context){
 		this.mCtx = context;
 	}
 
-	public DbOpenHelper open() throws SQLException {
+	public DbOpenHelper2 open() throws SQLException {
 		mDBHelper = new DatabaseHelper(mCtx, DATABASE_NAME, null, DATABASE_VERSION);
 		mDB = mDBHelper.getWritableDatabase();
 		return this;

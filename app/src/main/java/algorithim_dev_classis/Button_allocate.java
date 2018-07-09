@@ -86,8 +86,10 @@ public class Button_allocate extends Activity{
     private Button button_name_confirm;
     private Button button_name_cancel;
 
+    private String[] button_list;
 
-    /* 프로젝트 버튼 리스트 DB */
+
+    /* 프로젝트 버튼 리스트 DB -> 안씀 */
     private Project_button_list_DB mProject_button_list_DB;
     private Cursor mCursor_db;
     private InfoClass_button_db mInfoClass_db;
@@ -95,6 +97,11 @@ public class Button_allocate extends Activity{
     private CustomAdapter mAdapter_db;
 
     public String this_project_name = "";
+
+    private int last_id_number =0;
+
+
+
 
 
     @Override
@@ -129,9 +136,7 @@ public class Button_allocate extends Activity{
         mCursor.close();
 
 
-
-
-        /* DB에 버튼 리스트 불러오기 */
+        /* DB에 버튼 리스트 불러오기
 
         mProject_button_list_DB = new Project_button_list_DB(this, this_project_name);
         mProject_button_list_DB.open();
@@ -144,18 +149,25 @@ public class Button_allocate extends Activity{
 
             mInfoClass_db = new InfoClass_button_db(
                     mCursor_db.getInt(mCursor_db.getColumnIndex("_id")),
-                    mCursor_db.getString(mCursor_db.getColumnIndex("name")),
-                    mCursor_db.getString(mCursor_db.getColumnIndex("contact")),
-                    mCursor_db.getString(mCursor_db.getColumnIndex("email"))
-            );
+                    mCursor_db.getString(mCursor_db.getColumnIndex("button_name")),
+                    mCursor_db.getString(mCursor_db.getColumnIndex("date")),
+                    mCursor_db.getInt(mCursor_db.getColumnIndex("x_location")),
+                    mCursor_db.getInt(mCursor_db.getColumnIndex("y_location")),
+                    mCursor_db.getString(mCursor_db.getColumnIndex("coding_contents"))
+
+                    );
+            if(last_id_number < mCursor_db.getColumnIndex("_id")){
+                last_id_number = mCursor_db.getColumnIndex("_id");
+            }
 
             mInfoArray_db.add(mInfoClass_db);
         }
 
         mCursor_db.close();
         Toast.makeText(this, this_project_name + " : "+  mInfoArray_db.toString(),Toast.LENGTH_LONG).show();
+        */
 
-
+        button_list = new String[200];
 
 
 
@@ -233,32 +245,19 @@ public class Button_allocate extends Activity{
                 String button_name_text = button_name_edit_text.getText().toString();
                 ViewGroup frame = button_creating_method2(button_ids, button_name_text ,display_width/2, display_height/2, true);
 
-                StringBuilder last_id_number = new StringBuilder(project_title.getText());
-                last_id_number.append(button_ids);
 
-                StringBuilder button_name = new StringBuilder(project_title.getText());
+                StringBuilder button_name = new StringBuilder(button_name_edit_text.getText());
                 button_name.append(button_ids);
                 button_name.append("button_name");
 
 
-                StringBuilder location_x_string = new StringBuilder(project_title.getText());
-                location_x_string.append(button_ids);
-                location_x_string.append("x");
 
-                StringBuilder location_y_string = new StringBuilder(project_title.getText());
-                location_y_string.append(button_ids);
-                location_y_string.append("y");
-
-                sharedPreferences_editor.putInt(last_id_number.toString(), button_ids);
-                sharedPreferences_editor.putString(button_name.toString(), button_name_text);
-
-                sharedPreferences_editor.putFloat(location_x_string.toString(), frame.getX());
-                sharedPreferences_editor.putFloat(location_y_string.toString(), frame.getY());
 
                 button_name_box.setVisibility(View.INVISIBLE);
 
                 //button db에 추가
-                mProject_button_list_DB.insertColumn("김태희2","010000011111" , "angel@google.c1om");
+//                mProject_button_list_DB.create_project_db_insert(this_project_name, button_name.toString(), "00", "x","y", "");
+//                mProject_button_list_DB.create_project_db_insert(this_project_name, button_name.toString(), "00", display_width/2, display_height/2 , "");
 
             }
         });
