@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="G:\devProjectGit\arduino_esp8266_node_mcu_exam\arduino_car_nodemcu\library\src\main\assets"/><source path="G:\devProjectGit\arduino_esp8266_node_mcu_exam\arduino_car_nodemcu\library\build\generated\assets\shaders\release"/></dataSet><dataSet config="release"><source path="G:\devProjectGit\arduino_esp8266_node_mcu_exam\arduino_car_nodemcu\library\src\release\assets"/></dataSet></merger>

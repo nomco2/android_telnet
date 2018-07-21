@@ -101,7 +101,8 @@ public class Button_allocate extends Activity{
     private int last_id_number =0;
 
 
-
+    //버튼 저장 json
+    StringBuilder button_saver = new StringBuilder("[");
 
 
     @Override
@@ -255,9 +256,9 @@ public class Button_allocate extends Activity{
 
                 button_name_box.setVisibility(View.INVISIBLE);
 
-                //button db에 추가
-//                mProject_button_list_DB.create_project_db_insert(this_project_name, button_name.toString(), "00", "x","y", "");
-//                mProject_button_list_DB.create_project_db_insert(this_project_name, button_name.toString(), "00", display_width/2, display_height/2 , "");
+                //버튼 json에 추가
+                button_saver.append(json_adder(button_name_text,x[0],y[0],code[0]));
+
 
             }
         });
@@ -519,6 +520,14 @@ public class Button_allocate extends Activity{
         }
 
 
+    }
+
+    public String json_adder(String btn_name, float x_location, float y_location, String coding_contents){
+        String return_string = "";
+        return_string += "{\"btn\":\"" + btn_name + "\",\"x\":" + x_location +",\"y\":" + y_location + ",\"code\":\""+ coding_contents + "\"}";
+
+//        return_string += "{\"btn\" : \"first btn\", \"x\":100, \"y\":200, \"code\": \"code1\" }";
+        return return_string;
     }
 
 
