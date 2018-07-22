@@ -256,8 +256,7 @@ public class Button_allocate extends Activity{
 
                 button_name_box.setVisibility(View.INVISIBLE);
 
-                //버튼 json에 추가
-                button_saver.append(json_adder(button_name_text,x[0],y[0],code[0]));
+
 
 
             }
