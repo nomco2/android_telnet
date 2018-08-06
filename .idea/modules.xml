@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/arduino_car_nodemcu.iml" filepath="$PROJECT_DIR$/arduino_car_nodemcu.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ardu_car_nodemcu.iml" filepath="$PROJECT_DIR$/ardu_car_nodemcu.iml" />
       <module fileurl="file://$PROJECT_DIR$/commons-net-3.3/commons-net-3.3.iml" filepath="$PROJECT_DIR$/commons-net-3.3/commons-net-3.3.iml" />
       <module fileurl="file://$PROJECT_DIR$/ion-2.0.5/ion-2.0.5.iml" filepath="$PROJECT_DIR$/ion-2.0.5/ion-2.0.5.iml" />
     </modules>

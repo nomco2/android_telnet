@@ -105,6 +105,10 @@ public class Button_allocate extends Activity{
     StringBuilder button_saver = new StringBuilder("[");
 
 
+    //버튼 데이터 json 으로 저장
+    Json_sharedpreference json_sharedpreference;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,6 +139,17 @@ public class Button_allocate extends Activity{
         }
 
         mCursor.close();
+
+
+        /*json 에서 버튼 데이터 가져오기 */
+        json_sharedpreference = new Json_sharedpreference(this,project_title.toString());
+        json_sharedpreference.json_saver = json_sharedpreference.convert_json_to_data_class(); //기존 데이터 있는지 불러오기
+        if(json_sharedpreference.json_saver == null){
+            Toast.makeText(this,project_title.toString()+ "기존데이터 없음",Toast.LENGTH_SHORT).show();
+        }
+
+
+
 
 
         /* DB에 버튼 리스트 불러오기
