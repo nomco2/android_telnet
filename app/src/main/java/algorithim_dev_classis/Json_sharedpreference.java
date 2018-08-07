@@ -10,12 +10,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Json_sharedpreference {
-    public json_string_class[] json_saver = new json_string_class[10];
+    public json_string_class[] json_saver = new json_string_class[50];
     public StringBuilder for_saving_stringbuilder;
 
     SharedPreferences location_savaer;
     SharedPreferences.Editor location_xy_editor;
     String save_shared_data_name;
+    Context from_activity_context;
 
 
     //초기화 하기
@@ -31,8 +32,8 @@ public class Json_sharedpreference {
         save_shared_data_name = save_string_name;
 
         for_saving_stringbuilder = new StringBuilder();
-        loading_button_data();
-
+//        loading_button_data();
+        from_activity_context = from_context;
 
 
 
@@ -42,6 +43,7 @@ public class Json_sharedpreference {
     //sharedpreference로 저장하기
     public boolean save_json_to_sharedpreference(StringBuilder save_string_builder) {
         try{
+            location_xy_editor.remove(save_shared_data_name);
             location_xy_editor.putString(save_shared_data_name, save_string_builder.toString());
             location_xy_editor.commit();
             return true;
@@ -70,8 +72,8 @@ public class Json_sharedpreference {
             Log.i("json string", json_string);
 
             //리턴할 클래스 초기화
-            json_string_class[] return_class = new json_string_class[10];
-            for (int i = 0; i < 10; i++) {
+            json_string_class[] return_class = new json_string_class[50];
+            for (int i = 0; i < 50; i++) {
                 return_class[i] = new json_string_class();
             }
 
@@ -81,15 +83,18 @@ public class Json_sharedpreference {
             JSONArray ja = new JSONArray(json_string);
             for (int i = 0; i < ja.length(); i++){
                 JSONObject order = ja.getJSONObject(i);
-//                result += "btn: " + order.getString("btn") + ", x_location: " + order.getString("x") +
-//                        ", y_location: " + order.getInt("y") + ", code: " + order.getString("code") + "\n";
+
                 return_class[i].btn_name = order.getString("btn");
                 return_class[i].x_location = (float) order.getInt("x");
                 return_class[i].y_location = (float) order.getInt("y");
                 return_class[i].coding_contents = order.getString("code");
                 Log.i(i + " return class:", return_class[i].btn_name);
+
+                ((Button_allocate)from_activity_context).button_creation_method(return_class[i].btn_name, (int)return_class[i].x_location, (int)return_class[i].y_location);
+
             }
             Log.i("result:", result);
+            ((Button_allocate)from_activity_context).button_counter = ja.length() - 1;
 
             return return_class;
 

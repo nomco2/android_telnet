@@ -107,13 +107,26 @@ public class Button_allocate extends Activity{
 
     //버튼 데이터 json 으로 저장
     Json_sharedpreference json_sharedpreference;
-
+    public int button_counter = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.button_allocate);
         Intent intent = getIntent();
+
+
+
+        button_name_box = (ViewGroup) findViewById(R.id.button_name_box);
+        button_name_edit_text = (EditText) findViewById(R.id.button_name_edit_text);
+        button_name_confirm = (Button)  findViewById(R.id.button_name_confirm);
+        button_name_cancel = (Button)  findViewById(R.id.button_name_cancel);
+
+        button_allocate_main_layout = (RelativeLayout) findViewById(R.id.button_allocate_main_layout);
+        button_editing = (CheckBox) findViewById(R.id.button_editing);
+        button_creation = (ImageButton) findViewById(R.id.button_creation);
+
+
 
         project_list_num = intent.getExtras().getInt("project_list_num");
 //        Toast.makeText(this, project_list_num + "", Toast.LENGTH_LONG).show();
@@ -142,12 +155,51 @@ public class Button_allocate extends Activity{
 
 
         /*json 에서 버튼 데이터 가져오기 */
-        json_sharedpreference = new Json_sharedpreference(this,project_title.toString());
-        json_sharedpreference.json_saver = json_sharedpreference.convert_json_to_data_class(); //기존 데이터 있는지 불러오기
-        if(json_sharedpreference.json_saver == null){
-            Toast.makeText(this,project_title.toString()+ "기존데이터 없음",Toast.LENGTH_SHORT).show();
+        json_sharedpreference = new Json_sharedpreference(this,this_project_name);
+
+        if(json_sharedpreference.convert_json_to_data_class() == null){
+            Toast.makeText(this,this_project_name + " : 기존데이터 없음",Toast.LENGTH_SHORT).show();
+        }else{
+            json_sharedpreference.json_saver = json_sharedpreference.convert_json_to_data_class(); //기존 데이터 있는지 불러오기
+//            button_creation_method(json_sharedpreference.json_saver[0].btn_name, (int) json_sharedpreference.json_saver[0].x_location, (int)json_sharedpreference.json_saver[0].y_location);
+
         }
 
+
+//        json_sharedpreference.json_saver[0].btn_name =  new String("첫번째");
+//        json_sharedpreference.json_saver[0].x_location = 100;
+//        json_sharedpreference.json_saver[0].y_location  = 200;
+//        json_sharedpreference.json_saver[0].coding_contents =  new String("first");
+//
+//
+//        json_sharedpreference.json_saver[1].btn_name =  new String("두번째");
+//        json_sharedpreference.json_saver[1].x_location = 300;
+//        json_sharedpreference.json_saver[1].y_location  = 400;
+//        json_sharedpreference.json_saver[1].coding_contents =  new String("first");
+
+
+//        json_sharedpreference.for_saving_stringbuilder.append("[");
+//
+//        json_sharedpreference.for_saving_stringbuilder.append(
+//                json_sharedpreference.json_adder(
+//                        json_sharedpreference.json_saver[0].btn_name,
+//                        json_sharedpreference.json_saver[0].x_location,
+//                        json_sharedpreference.json_saver[0].y_location,
+//                        json_sharedpreference.json_saver[0].coding_contents));
+//
+//        json_sharedpreference.for_saving_stringbuilder.append(",");
+//
+//        json_sharedpreference.for_saving_stringbuilder.append(
+//                json_sharedpreference.json_adder(
+//                        json_sharedpreference.json_saver[1].btn_name,
+//                        json_sharedpreference.json_saver[1].x_location,
+//                        json_sharedpreference.json_saver[1].y_location,
+//                        json_sharedpreference.json_saver[1].coding_contents));
+//
+//        json_sharedpreference.for_saving_stringbuilder.append("]");
+
+
+//        json_sharedpreference.save_json_to_sharedpreference(json_sharedpreference.for_saving_stringbuilder); //저장하기
 
 
 
@@ -182,10 +234,6 @@ public class Button_allocate extends Activity{
         mCursor_db.close();
         Toast.makeText(this, this_project_name + " : "+  mInfoArray_db.toString(),Toast.LENGTH_LONG).show();
         */
-
-        button_list = new String[200];
-
-
 
 
         /* 화면 크기에 따라 버튼 크기 조절하기 */
@@ -232,14 +280,8 @@ public class Button_allocate extends Activity{
 
 
 
-        button_name_box = (ViewGroup) findViewById(R.id.button_name_box);
-        button_name_edit_text = (EditText) findViewById(R.id.button_name_edit_text);
-        button_name_confirm = (Button)  findViewById(R.id.button_name_confirm);
-        button_name_cancel = (Button)  findViewById(R.id.button_name_cancel);
 
-        button_allocate_main_layout = (RelativeLayout) findViewById(R.id.button_allocate_main_layout);
 
-        button_creation = (ImageButton) findViewById(R.id.button_creation);
         button_creation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -258,20 +300,8 @@ public class Button_allocate extends Activity{
             @Override
             public void onClick(View v) {
 
-                String button_name_text = button_name_edit_text.getText().toString();
-                ViewGroup frame = button_creating_method2(button_ids, button_name_text ,display_width/2, display_height/2, true);
 
-
-                StringBuilder button_name = new StringBuilder(button_name_edit_text.getText());
-                button_name.append(button_ids);
-                button_name.append("button_name");
-
-
-
-
-                button_name_box.setVisibility(View.INVISIBLE);
-
-
+                button_creation_method(button_name_edit_text.getText().toString(), display_width/2, display_height/2);
 
 
             }
@@ -296,7 +326,6 @@ public class Button_allocate extends Activity{
         });
 
 
-        button_editing = (CheckBox) findViewById(R.id.button_editing);
         button_editing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -323,6 +352,16 @@ public class Button_allocate extends Activity{
 
 
 
+    public void button_creation_method(String btn_name, int x_location, int y_location){
+        String button_name_text = btn_name;
+        ViewGroup frame = button_creating_method2(button_ids, button_name_text ,x_location, y_location, true);
+
+
+        button_name_box.setVisibility(View.INVISIBLE);
+
+
+
+    }
 
 
 
