@@ -27,6 +27,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.kimfamily.arduino_car_nodemcu.DB_select;
 import com.example.kimfamily.arduino_car_nodemcu.R;
 
 import java.util.ArrayList;
@@ -108,6 +109,7 @@ public class Button_allocate extends Activity{
     //버튼 데이터 json 으로 저장
     Json_sharedpreference json_sharedpreference;
     public int button_counter = 0;
+    public boolean is_stringbuilder_start = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -126,114 +128,6 @@ public class Button_allocate extends Activity{
         button_editing = (CheckBox) findViewById(R.id.button_editing);
         button_creation = (ImageButton) findViewById(R.id.button_creation);
 
-
-
-        project_list_num = intent.getExtras().getInt("project_list_num");
-//        Toast.makeText(this, project_list_num + "", Toast.LENGTH_LONG).show();
-
-        /* 현재 프로젝트 이름 가져오기 */
-        mDbOpenHelper = new DbOpenHelper(this);
-        mDbOpenHelper.open();
-        mCursor = null;
-        mCursor = mDbOpenHelper.getAllColumns();
-        DLog.e("load list", "COUNT = " + mCursor.getCount());
-
-        project_title = (TextView) findViewById(R.id.project_title);
-
-        int while_count = 0;
-        while (mCursor.moveToNext()) {
-
-
-            while_count++;
-            if (while_count == project_list_num) {
-                this_project_name = mCursor.getString(mCursor.getColumnIndex("name"));
-                project_title.setText(this_project_name);
-            }
-        }
-
-        mCursor.close();
-
-
-        /*json 에서 버튼 데이터 가져오기 */
-        json_sharedpreference = new Json_sharedpreference(this,this_project_name);
-
-        if(json_sharedpreference.convert_json_to_data_class() == null){
-            Toast.makeText(this,this_project_name + " : 기존데이터 없음",Toast.LENGTH_SHORT).show();
-        }else{
-            json_sharedpreference.json_saver = json_sharedpreference.convert_json_to_data_class(); //기존 데이터 있는지 불러오기
-//            button_creation_method(json_sharedpreference.json_saver[0].btn_name, (int) json_sharedpreference.json_saver[0].x_location, (int)json_sharedpreference.json_saver[0].y_location);
-
-        }
-
-
-//        json_sharedpreference.json_saver[0].btn_name =  new String("첫번째");
-//        json_sharedpreference.json_saver[0].x_location = 100;
-//        json_sharedpreference.json_saver[0].y_location  = 200;
-//        json_sharedpreference.json_saver[0].coding_contents =  new String("first");
-//
-//
-//        json_sharedpreference.json_saver[1].btn_name =  new String("두번째");
-//        json_sharedpreference.json_saver[1].x_location = 300;
-//        json_sharedpreference.json_saver[1].y_location  = 400;
-//        json_sharedpreference.json_saver[1].coding_contents =  new String("first");
-
-
-//        json_sharedpreference.for_saving_stringbuilder.append("[");
-//
-//        json_sharedpreference.for_saving_stringbuilder.append(
-//                json_sharedpreference.json_adder(
-//                        json_sharedpreference.json_saver[0].btn_name,
-//                        json_sharedpreference.json_saver[0].x_location,
-//                        json_sharedpreference.json_saver[0].y_location,
-//                        json_sharedpreference.json_saver[0].coding_contents));
-//
-//        json_sharedpreference.for_saving_stringbuilder.append(",");
-//
-//        json_sharedpreference.for_saving_stringbuilder.append(
-//                json_sharedpreference.json_adder(
-//                        json_sharedpreference.json_saver[1].btn_name,
-//                        json_sharedpreference.json_saver[1].x_location,
-//                        json_sharedpreference.json_saver[1].y_location,
-//                        json_sharedpreference.json_saver[1].coding_contents));
-//
-//        json_sharedpreference.for_saving_stringbuilder.append("]");
-
-
-//        json_sharedpreference.save_json_to_sharedpreference(json_sharedpreference.for_saving_stringbuilder); //저장하기
-
-
-
-
-        /* DB에 버튼 리스트 불러오기
-
-        mProject_button_list_DB = new Project_button_list_DB(this, this_project_name);
-        mProject_button_list_DB.open();
-        mInfoArray_db = new ArrayList<InfoClass_button_db>();
-
-        mCursor_db = null;
-        mCursor_db = mProject_button_list_DB.getAllColumns();
-
-        while (mCursor_db.moveToNext()) {
-
-            mInfoClass_db = new InfoClass_button_db(
-                    mCursor_db.getInt(mCursor_db.getColumnIndex("_id")),
-                    mCursor_db.getString(mCursor_db.getColumnIndex("button_name")),
-                    mCursor_db.getString(mCursor_db.getColumnIndex("date")),
-                    mCursor_db.getInt(mCursor_db.getColumnIndex("x_location")),
-                    mCursor_db.getInt(mCursor_db.getColumnIndex("y_location")),
-                    mCursor_db.getString(mCursor_db.getColumnIndex("coding_contents"))
-
-                    );
-            if(last_id_number < mCursor_db.getColumnIndex("_id")){
-                last_id_number = mCursor_db.getColumnIndex("_id");
-            }
-
-            mInfoArray_db.add(mInfoClass_db);
-        }
-
-        mCursor_db.close();
-        Toast.makeText(this, this_project_name + " : "+  mInfoArray_db.toString(),Toast.LENGTH_LONG).show();
-        */
 
 
         /* 화면 크기에 따라 버튼 크기 조절하기 */
@@ -272,12 +166,50 @@ public class Button_allocate extends Activity{
 
 
 
-        /* 버튼 추가 삭제 관련 */
-
-        sharedPreferences_savaer = PreferenceManager.getDefaultSharedPreferences(this);
-        sharedPreferences_editor = sharedPreferences_savaer.edit();
 
 
+
+        project_list_num = intent.getExtras().getInt("project_list_num");
+//        Toast.makeText(this, project_list_num + "", Toast.LENGTH_LONG).show();
+
+        /* 현재 프로젝트 이름 가져오기 */
+        mDbOpenHelper = new DbOpenHelper(this);
+        mDbOpenHelper.open();
+        mCursor = null;
+        mCursor = mDbOpenHelper.getAllColumns();
+        DLog.e("load list", "COUNT = " + mCursor.getCount());
+
+        project_title = (TextView) findViewById(R.id.project_title);
+
+        int while_count = 0;
+        while (mCursor.moveToNext()) {
+
+
+            while_count++;
+            if (while_count == project_list_num) {
+                this_project_name = mCursor.getString(mCursor.getColumnIndex("name"));
+                project_title.setText(this_project_name);
+            }
+        }
+
+        mCursor.close();
+
+
+
+
+
+
+
+
+        /*기존 데이터 버튼 데이터 로딩*/
+        json_sharedpreference = new Json_sharedpreference(this,this_project_name);
+//기존 데이터 있는지 불러오기
+//        json_sharedpreference.json_saver = json_sharedpreference.convert_json_to_data_class();
+        if(json_sharedpreference.convert_json_to_data_class() == null){
+            Toast.makeText(this,this_project_name + " : 기존데이터 없음",Toast.LENGTH_SHORT).show();
+        }else{
+            json_sharedpreference.json_saver = json_sharedpreference.convert_json_to_data_class();
+        }
 
 
 
@@ -300,8 +232,16 @@ public class Button_allocate extends Activity{
             @Override
             public void onClick(View v) {
 
+                //처음이면 쉼표 안넣음
 
                 button_creation_method(button_name_edit_text.getText().toString(), display_width/2, display_height/2);
+
+                //json arrry 에 추가해놓기
+                json_sharedpreference.add_json_arraylist(button_name_edit_text.getText().toString(),
+                        display_width/2,
+                        display_height/2,
+                        "");
+
 
 
             }
@@ -353,6 +293,7 @@ public class Button_allocate extends Activity{
 
 
     public void button_creation_method(String btn_name, int x_location, int y_location){
+
         String button_name_text = btn_name;
         ViewGroup frame = button_creating_method2(button_ids, button_name_text ,x_location, y_location, true);
 
@@ -360,6 +301,15 @@ public class Button_allocate extends Activity{
         button_name_box.setVisibility(View.INVISIBLE);
 
 
+
+    }
+
+    @Override
+    public void onBackPressed(){
+        json_sharedpreference.save_json_to_sharedpreference(); //저장하기
+
+        Intent intent=new Intent(Button_allocate.this,DB_select.class);
+        startActivity(intent);
 
     }
 

@@ -9,47 +9,92 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class Json_sharedpreference {
-    public json_string_class[] json_saver = new json_string_class[50];
+//    public json_string_class[] json_saver = new json_string_class[10];
     public StringBuilder for_saving_stringbuilder;
+    ArrayList<json_string_class> json_saver;
+
 
     SharedPreferences location_savaer;
     SharedPreferences.Editor location_xy_editor;
     String save_shared_data_name;
-    Context from_activity_context;
+    Context original_activity_context;
 
 
     //초기화 하기
     public Json_sharedpreference(Context from_context, String save_string_name){
-        for (int i = 0; i < 10; i++) {
-            json_saver[i] = new json_string_class();
 
-        }
-
+        json_saver = new ArrayList<>();
 
         location_savaer = PreferenceManager.getDefaultSharedPreferences(from_context);
         location_xy_editor = location_savaer.edit();
         save_shared_data_name = save_string_name;
 
         for_saving_stringbuilder = new StringBuilder();
-//        loading_button_data();
-        from_activity_context = from_context;
+        original_activity_context = from_context;
+
 
 
 
     }
 
 
-    //sharedpreference로 저장하기
-    public boolean save_json_to_sharedpreference(StringBuilder save_string_builder) {
+
+
+    public boolean add_json_arraylist(String btn_name, float x_location, float y_location, String coding_contents){
         try{
-            location_xy_editor.remove(save_shared_data_name);
-            location_xy_editor.putString(save_shared_data_name, save_string_builder.toString());
-            location_xy_editor.commit();
+            json_string_class test_class = new json_string_class() ;
+            test_class.btn_name = btn_name;
+            test_class.x_location = x_location;
+            test_class.y_location = y_location;
+            test_class.coding_contents = coding_contents;
+
+            json_saver.add(test_class);
             return true;
         }catch (Exception e){
             return false;
         }
+
+    }
+
+    //sharedpreference로 저장하기
+    public void save_json_to_sharedpreference() {
+
+        JSONObject obj = new JSONObject();
+        try {
+            JSONArray jArray = new JSONArray();//배열이 필요할때
+            for (int i = 0; i < json_saver.size(); i++)//배열
+            {
+                JSONObject sObject = new JSONObject();//배열 내에 들어갈 json
+                sObject.put("btn", json_saver.get(i).btn_name);
+                sObject.put("x", json_saver.get(i).x_location);
+                sObject.put("y", json_saver.get(i).y_location);
+                sObject.put("code", json_saver.get(i).coding_contents);
+                jArray.put(sObject);
+            }
+            obj.put("explain", "planA");
+            obj.put("id", "userID");
+            obj.put("date", "20180808");
+            obj.put("item", jArray);//배열을 넣음
+
+            System.out.println(obj.toString());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+//        try{
+            location_xy_editor.putString(save_shared_data_name, obj.toString());
+            location_xy_editor.commit();
+//            return true;
+//        }catch (Exception e){
+//            return false;
+//        }
 
 
     }
@@ -65,36 +110,50 @@ public class Json_sharedpreference {
 
 
     //불러오기 : 저장된 string을 클래스 데이터 형태로 가져오기
-    public json_string_class[] convert_json_to_data_class(){
+    public ArrayList<json_string_class> convert_json_to_data_class(){
         try{
 
             String json_string = location_savaer.getString(save_shared_data_name, "");
+
             Log.i("json string", json_string);
 
-            //리턴할 클래스 초기화
-            json_string_class[] return_class = new json_string_class[50];
-            for (int i = 0; i < 50; i++) {
-                return_class[i] = new json_string_class();
-            }
 
 
+
+
+
+            String id;
+            String explain;
+            String date;
+            String item = "";
             //json에서 데이터 추출
-            String result = new String();
             JSONArray ja = new JSONArray(json_string);
-            for (int i = 0; i < ja.length(); i++){
-                JSONObject order = ja.getJSONObject(i);
+            JSONObject order = ja.getJSONObject(0);
 
-                return_class[i].btn_name = order.getString("btn");
-                return_class[i].x_location = (float) order.getInt("x");
-                return_class[i].y_location = (float) order.getInt("y");
-                return_class[i].coding_contents = order.getString("code");
-                Log.i(i + " return class:", return_class[i].btn_name);
+            id = order.getString("id");
+            explain =  order.getString("explain");
+            date = order.getString("date");
+            item = order.getString("item");
 
-                ((Button_allocate)from_activity_context).button_creation_method(return_class[i].btn_name, (int)return_class[i].x_location, (int)return_class[i].y_location);
 
+
+            ArrayList<json_string_class> return_class = new ArrayList<>();
+
+            JSONArray ja2 = new JSONArray(item);
+            for (int i = 0; i < ja2.length(); i++){
+                JSONObject order2 = ja2.getJSONObject(i);
+//                result += "btn: " + order.getString("btn") + ", x_location: " + order.getString("x") +
+//                        ", y_location: " + order.getInt("y") + ", code: " + order.getString("code") + "\n";
+                return_class.get(i).btn_name = order2.getString("btn");
+                return_class.get(i).x_location = (float) order2.getInt("x");
+                return_class.get(i).y_location = (float) order2.getInt("y");
+                return_class.get(i).coding_contents = order2.getString("code");
+
+                //바로 json arrrary 추가 및 버튼 만들기
+                add_json_arraylist(return_class.get(i).btn_name, return_class.get(i).x_location, return_class.get(i).y_location, return_class.get(i).coding_contents);
+                ((Button_allocate)original_activity_context).button_creation_method(return_class.get(i).btn_name, (int) return_class.get(i).x_location, (int)return_class.get(i).y_location);
             }
-            Log.i("result:", result);
-            ((Button_allocate)from_activity_context).button_counter = ja.length() - 1;
+
 
             return return_class;
 
