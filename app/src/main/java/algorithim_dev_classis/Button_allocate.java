@@ -32,15 +32,9 @@ import com.example.kimfamily.arduino_car_nodemcu.R;
 
 import java.util.ArrayList;
 
-import database.adapter.CustomAdapter;
-import database.conf.Constants;
-import database.data.InfoClass;
-import database.data.InfoClass_button_db;
-import database.database.DbOpenHelper;
-import database.database.Project_button_list_DB;
-import database.util.DLog;
+import database.DbOpenHelper_button;
+import database.InfoClass_btn_data;
 import movable_classis.Movable_Layout_Class;
-import movable_classis.Movable_Layout_Class_auto_lineup;
 
 /**
  * Created by KimFamily on 2018-02-05.
@@ -48,11 +42,7 @@ import movable_classis.Movable_Layout_Class_auto_lineup;
 
 public class Button_allocate extends Activity{
 
-    int project_list_num;
-    private Cursor mCursor;
-    private DbOpenHelper mDbOpenHelper;
-    private InfoClass mInfoClass;
-    private ArrayList<InfoClass> mInfoArray;
+
 
     private TextView project_title;
 
@@ -90,26 +80,17 @@ public class Button_allocate extends Activity{
     private String[] button_list;
 
 
-    /* 프로젝트 버튼 리스트 DB -> 안씀 */
-    private Project_button_list_DB mProject_button_list_DB;
-    private Cursor mCursor_db;
-    private InfoClass_button_db mInfoClass_db;
-    private ArrayList<InfoClass_button_db> mInfoArray_db;
-    private CustomAdapter mAdapter_db;
-
-    public String this_project_name = "";
-
-    private int last_id_number =0;
 
 
-    //버튼 저장 json
-    StringBuilder button_saver = new StringBuilder("[");
+
+    //data base 관련
+    private DbOpenHelper_button mDbOpenHelper;
+    private Cursor mCursor;
+    private InfoClass_btn_data mInfoClass;
+    private ArrayList<InfoClass_btn_data> mInfoArray;
 
 
-    //버튼 데이터 json 으로 저장
-    Json_sharedpreference json_sharedpreference;
-    public int button_counter = 0;
-    public boolean is_stringbuilder_start = true;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -169,47 +150,6 @@ public class Button_allocate extends Activity{
 
 
 
-        project_list_num = intent.getExtras().getInt("project_list_num");
-//        Toast.makeText(this, project_list_num + "", Toast.LENGTH_LONG).show();
-
-        /* 현재 프로젝트 이름 가져오기 */
-        mDbOpenHelper = new DbOpenHelper(this);
-        mDbOpenHelper.open();
-        mCursor = null;
-        mCursor = mDbOpenHelper.getAllColumns();
-        DLog.e("load list", "COUNT = " + mCursor.getCount());
-
-        project_title = (TextView) findViewById(R.id.project_title);
-
-        int while_count = 0;
-        while (mCursor.moveToNext()) {
-
-
-            while_count++;
-            if (while_count == project_list_num) {
-                this_project_name = mCursor.getString(mCursor.getColumnIndex("name"));
-                project_title.setText(this_project_name);
-            }
-        }
-
-        mCursor.close();
-
-
-
-
-
-
-
-
-        /*기존 데이터 버튼 데이터 로딩*/
-        json_sharedpreference = new Json_sharedpreference(this,this_project_name);
-//기존 데이터 있는지 불러오기
-//        json_sharedpreference.json_saver = json_sharedpreference.convert_json_to_data_class();
-        if(json_sharedpreference.convert_json_to_data_class() == null){
-            Toast.makeText(this,this_project_name + " : 기존데이터 없음",Toast.LENGTH_SHORT).show();
-        }else{
-            json_sharedpreference.json_saver = json_sharedpreference.convert_json_to_data_class();
-        }
 
 
 
@@ -236,11 +176,7 @@ public class Button_allocate extends Activity{
 
                 button_creation_method(button_name_edit_text.getText().toString(), display_width/2, display_height/2);
 
-                //json arrry 에 추가해놓기
-                json_sharedpreference.add_json_arraylist(button_name_edit_text.getText().toString(),
-                        display_width/2,
-                        display_height/2,
-                        "");
+
 
 
 
@@ -306,7 +242,6 @@ public class Button_allocate extends Activity{
 
     @Override
     public void onBackPressed(){
-        json_sharedpreference.save_json_to_sharedpreference(); //저장하기
 
         Intent intent=new Intent(Button_allocate.this,DB_select.class);
         startActivity(intent);

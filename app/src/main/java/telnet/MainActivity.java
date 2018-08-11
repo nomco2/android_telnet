@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kimfamily.arduino_car_nodemcu.R;
-import com.koushikdutta.ion.Ion;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -204,7 +203,7 @@ public class MainActivity extends ActionBarActivity {
             findViewById(R.id.id5).setVisibility(View.VISIBLE);
             ((TextView) findViewById(R.id.textView)).setText(msg);
             ImageButton imageButton = (ImageButton) findViewById(R.id.imageButton);
-            Ion.with(imageButton).load(msg);
+//            Ion.with(imageButton).load(msg);
         }
     }
 }
