@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,13 +28,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.kimfamily.arduino_car_nodemcu.DB_select;
 import com.example.kimfamily.arduino_car_nodemcu.R;
 
 import java.util.ArrayList;
 
 import database.DbOpenHelper_button;
 import database.InfoClass_btn_data;
+import database.adapter.CustomAdapter;
+import database.data.InfoClass;
+import database.database.DbOpenHelper;
+import database.util.DLog;
 import movable_classis.Movable_Layout_Class;
 
 /**
@@ -42,7 +46,19 @@ import movable_classis.Movable_Layout_Class;
 
 public class Button_allocate extends Activity{
 
+    //프로젝트 테이블 에서 가져온것
+    int project_list_num;
+    private Cursor mCursor;
+    private DbOpenHelper mDbOpenHelper;
+    private InfoClass mInfoClass;
+    private ArrayList<InfoClass> mInfoArray;
 
+
+    //버튼 데이터 테이블 에서 가져온것
+    private DbOpenHelper_button mDbOpenHelper_btn;
+    private Cursor mCursor_btn;
+    private InfoClass_btn_data mInfoClass_btn;
+    private ArrayList<InfoClass_btn_data> mInfoArray_btn;
 
     private TextView project_title;
 
@@ -82,12 +98,9 @@ public class Button_allocate extends Activity{
 
 
 
+    public String this_project_name = "";
 
-    //data base 관련
-    private DbOpenHelper_button mDbOpenHelper;
-    private Cursor mCursor;
-    private InfoClass_btn_data mInfoClass;
-    private ArrayList<InfoClass_btn_data> mInfoArray;
+
 
 
 
@@ -108,6 +121,50 @@ public class Button_allocate extends Activity{
         button_allocate_main_layout = (RelativeLayout) findViewById(R.id.button_allocate_main_layout);
         button_editing = (CheckBox) findViewById(R.id.button_editing);
         button_creation = (ImageButton) findViewById(R.id.button_creation);
+
+
+
+        project_list_num = intent.getExtras().getInt("project_list_num");
+//        Toast.makeText(this, project_list_num + "", Toast.LENGTH_LONG).show();
+
+        /* 현재 프로젝트 이름 가져오기 */
+        mDbOpenHelper = new DbOpenHelper(this);
+        mDbOpenHelper.open();
+        mCursor = null;
+        mCursor = mDbOpenHelper.getAllColumns();
+        DLog.e("load list", "COUNT = " + mCursor.getCount());
+
+        project_title = (TextView) findViewById(R.id.project_title);
+
+        int while_count = 0;
+        while (mCursor.moveToNext()) {
+
+
+            while_count++;
+            if (while_count == project_list_num) {
+                this_project_name = mCursor.getString(mCursor.getColumnIndex("name"));
+                project_title.setText(this_project_name);
+            }
+        }
+
+        mCursor.close();
+
+
+
+        /********* 버튼 테이블에서 데이터 가져오기 **********/
+        //현재 버튼 이름으로 테이블 데이터 가져오기
+        mDbOpenHelper_btn = new DbOpenHelper_button(this,this_project_name);
+        mDbOpenHelper_btn.open();
+
+        //기존 데이터 찾아서 가져오기
+        startManagingCursor(mCursor);
+
+
+        mInfoArray_btn = new ArrayList<InfoClass_btn_data>();
+
+
+
+
 
 
 
@@ -147,7 +204,10 @@ public class Button_allocate extends Activity{
 
 
 
+        /* 버튼 추가 삭제 관련 */
 
+        sharedPreferences_savaer = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences_editor = sharedPreferences_savaer.edit();
 
 
 
@@ -172,12 +232,14 @@ public class Button_allocate extends Activity{
             @Override
             public void onClick(View v) {
 
-                //처음이면 쉼표 안넣음
+                if(!mDbOpenHelper_btn.is_same_btn_existed(button_name_edit_text.getText().toString())){
+                    mDbOpenHelper_btn.insertColumn_button_data(button_name_edit_text.getText().toString(),100 , 200, "1");
+                    button_creation_method(button_name_edit_text.getText().toString(), display_width/2, display_height/2);
 
-                button_creation_method(button_name_edit_text.getText().toString(), display_width/2, display_height/2);
+                }else{
+                    Toast.makeText(getApplicationContext(), "같은 이름의 데이터가 있습니다.", Toast.LENGTH_SHORT).show();
 
-
-
+                }
 
 
             }
@@ -214,7 +276,8 @@ public class Button_allocate extends Activity{
 
 
 
-
+        //기존 데이터 불러와서 배치
+        doWhileCursorToArray();
 
         visible_or_not();
 
@@ -229,7 +292,6 @@ public class Button_allocate extends Activity{
 
 
     public void button_creation_method(String btn_name, int x_location, int y_location){
-
         String button_name_text = btn_name;
         ViewGroup frame = button_creating_method2(button_ids, button_name_text ,x_location, y_location, true);
 
@@ -237,14 +299,6 @@ public class Button_allocate extends Activity{
         button_name_box.setVisibility(View.INVISIBLE);
 
 
-
-    }
-
-    @Override
-    public void onBackPressed(){
-
-        Intent intent=new Intent(Button_allocate.this,DB_select.class);
-        startActivity(intent);
 
     }
 
@@ -460,13 +514,43 @@ public class Button_allocate extends Activity{
 
     }
 
-    public String json_adder(String btn_name, float x_location, float y_location, String coding_contents){
-        String return_string = "";
-        return_string += "{\"btn\":\"" + btn_name + "\",\"x\":" + x_location +",\"y\":" + y_location + ",\"code\":\""+ coding_contents + "\"}";
 
-//        return_string += "{\"btn\" : \"first btn\", \"x\":100, \"y\":200, \"code\": \"code1\" }";
-        return return_string;
+
+    /**
+     * DB에서 받아온 값을 ArrayList에 Add
+     */
+    private void doWhileCursorToArray(){
+
+        mCursor_btn = null;
+        mCursor_btn = mDbOpenHelper_btn.getAllColumns_btn_data();
+
+        while (mCursor_btn.moveToNext()) {
+
+            mInfoClass_btn = new InfoClass_btn_data(
+
+                    mCursor_btn.getInt(mCursor_btn.getColumnIndex("_id")),
+                    mCursor_btn.getString(mCursor_btn.getColumnIndex("btn_name")),
+                    mCursor_btn.getInt(mCursor_btn.getColumnIndex("x")),
+                    mCursor_btn.getInt(mCursor_btn.getColumnIndex("y")),
+                    mCursor_btn.getString(mCursor_btn.getColumnIndex("coding"))
+
+
+
+            );
+            Log.i("class", mInfoClass_btn +"");
+            mInfoArray_btn.add(mInfoClass_btn);
+            button_creation_method(mCursor_btn.getString(mCursor_btn.getColumnIndex("btn_name")), mCursor_btn.getInt(mCursor_btn.getColumnIndex("x")), mCursor_btn.getInt(mCursor_btn.getColumnIndex("y")));
+
+
+        }
+
+        mCursor_btn.close();
     }
+
+
+
+
+
 
 
 }

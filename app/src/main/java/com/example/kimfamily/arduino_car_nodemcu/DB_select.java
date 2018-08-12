@@ -25,8 +25,8 @@ public class DB_select extends Activity {
     private static final String TAG = "TestDataBaseActivity";
     private DbOpenHelper mDbOpenHelper;
     private Cursor mCursor;
-    private InfoClass mInfoClass;
-    private ArrayList<InfoClass> mInfoArray;
+    private database.data.InfoClass mInfoClass;
+    private ArrayList<database.data.InfoClass> mInfoArray;
     private CustomAdapter mAdapter;
 
     @Override
@@ -40,17 +40,10 @@ public class DB_select extends Activity {
         mDbOpenHelper = new DbOpenHelper(this);
         mDbOpenHelper.open();
 
-//        mDbOpenHelper.insertColumn("김태희","01000001111" , "angel@google.com");
-//        mDbOpenHelper.insertColumn("송혜교","01333331111" , "asdffff@emdo.com");
-//        mDbOpenHelper.insertColumn("낸시랭","01234001111" , "yaya@hhh.com");
-//        mDbOpenHelper.insertColumn("제시카","01600001111" , "tree777@atat.com");
-//        mDbOpenHelper.insertColumn("성유리","01700001111" , "tiger@tttt.com");
-//        mDbOpenHelper.insertColumn("김태우","01800001111" , "gril@zzz.com");
-
-//        startManagingCursor(mCursor);
 
 
-        mInfoArray = new ArrayList<InfoClass>();
+
+        mInfoArray = new ArrayList<database.data.InfoClass>();
 
         doWhileCursorToArray();
 
