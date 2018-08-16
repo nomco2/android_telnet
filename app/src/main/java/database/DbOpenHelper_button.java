@@ -46,7 +46,7 @@ public class DbOpenHelper_button {
 
 		// 생성자
 		public DatabaseHelper(Context context, String name,
-				CursorFactory factory, int version) {
+							  CursorFactory factory, int version) {
 			super(context, name, factory, version);
 		}
 
@@ -77,7 +77,7 @@ public class DbOpenHelper_button {
 
 
 	public DbOpenHelper_button open() throws SQLException{
-		mDBHelper = new DatabaseHelper(mCtx, DATABASE_NAME, null, DATABASE_VERSION);
+		mDBHelper = new DatabaseHelper(mCtx, project_name, null, DATABASE_VERSION);
 		mDB = mDBHelper.getWritableDatabase();
 		return this;
 	}
@@ -117,19 +117,40 @@ public class DbOpenHelper_button {
 		return mDB.update(CreateDB._TABLENAME, values, "_id="+id, null) > 0;
 	}
 
+	// Update DB _업데이트 : id 번호를 알아야 됨 -> 이름으로 번호 찾기 돌려야
+	public boolean updateColumn_btn_data(long id , String btn_name, int x, int y){
+		ContentValues values = new ContentValues();
+		if(btn_name != "") {
+			values.put(this.btn_name, btn_name);
+		}
+		if(x != 0) {
+			values.put(this.x_location, x);
+		}
+		if(y != 0) {
+			values.put(this.y_location, y);
+		}
+
+		return mDB.update(project_name, values, "_id="+id, null) > 0;
+	}
+
+
+
 	// Delete ID
 	public boolean deleteColumn(long id){
 		return mDB.delete(CreateDB._TABLENAME, "_id="+id, null) > 0;
 	}
 
+	// Delete ID _btn_data  : id 번호를 알아야 됨 -> 이름으로 번호 찾기 돌려야
+	public boolean deleteColumn_btn_data(long id){
+		return mDB.delete(project_name, "_id="+id, null) > 0;
+	}
 
 
-	
 	// Delete Contact
 	public boolean deleteColumn(String number){
 		return mDB.delete(CreateDB._TABLENAME, "contact="+number, null) > 0;
 	}
-	
+
 	// Select All
 	public Cursor getAllColumns(){
 		return mDB.query(CreateDB._TABLENAME, null, null, null, null, null, null);
@@ -155,11 +176,27 @@ public class DbOpenHelper_button {
 		return c;
 	}
 
-	// 이름으로 검색 하기 (rawQuery)
+	// 이름으로 검색 하기 (rawQuery) _btn_data 있는지 없는지
 	public Cursor getMatchName_btn_data(String name){
 		Cursor c = mDB.rawQuery( "select * from " + project_name + " where " + btn_name + " =" + "'" + name + "'" , null);
 		return c;
 	}
+
+	// 이름으로 검색 하기 (rawQuery) _ id 번호 주기
+	public int get_id_by_Name_btn_data(String name){
+
+		Cursor c = mDB.rawQuery( "select * from " + project_name + " where " + btn_name + " =" + "'" + name + "'" , null);
+		c.moveToFirst();
+		return c.getInt(c.getColumnIndex("_id"));
+	}
+
+	public void duplicate_btn_data(String name){
+		Cursor c = mDB.rawQuery( "select * from " + project_name + " where " + btn_name + " =" + "'" + name + "'" , null);
+		c.moveToFirst();
+		insertColumn_button_data(c.getString(c.getColumnIndex(btn_name))+ "_복사",c.getInt(c.getColumnIndex(x_location)), c.getInt(c.getColumnIndex(y_location)),c.getString(c.getColumnIndex(coding)));
+
+	}
+
 
 	//이름 찾으면 True 없으면 False
 	public boolean is_same_btn_existed(String btn_name){

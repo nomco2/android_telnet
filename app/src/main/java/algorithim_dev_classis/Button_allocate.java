@@ -1,7 +1,9 @@
 package algorithim_dev_classis;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -11,6 +13,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
+import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -65,6 +68,7 @@ public class Button_allocate extends Activity{
     private RelativeLayout button_allocate_main_layout;
     private ImageButton button_creation;
     private CheckBox button_editing;
+    private TextView msgbox_title;
 
     private int button_ids = 30000;
 
@@ -121,7 +125,7 @@ public class Button_allocate extends Activity{
         button_allocate_main_layout = (RelativeLayout) findViewById(R.id.button_allocate_main_layout);
         button_editing = (CheckBox) findViewById(R.id.button_editing);
         button_creation = (ImageButton) findViewById(R.id.button_creation);
-
+        msgbox_title = (TextView) findViewById(R.id.msgbox_title);
 
 
         project_list_num = intent.getExtras().getInt("project_list_num");
@@ -213,28 +217,65 @@ public class Button_allocate extends Activity{
 
 
 
-
+//버튼 만들기 버튼
         button_creation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                button_ids += 100;
+//                button_ids += 100;
+//
+//                button_name_box.setVisibility(View.VISIBLE);
+//                msgbox_title.setText("생성할 버튼의 이름을 넣어 주세요.");
+//                button_name_edit_text.setText("");
+//                button_name_edit_text.requestFocus();
 
-                button_name_box.setVisibility(View.VISIBLE);
-                button_name_edit_text.setText("");
-                button_name_edit_text.requestFocus();
+                final EditText edittext = new EditText(Button_allocate.this);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(Button_allocate.this);
+                builder.setTitle("버튼 이름 수정");
+                builder.setMessage("바꿀 버튼 이름을 넣어주세요. \n ※중복은 허용 안됨.");
+                builder.setView(edittext);
+                builder.setPositiveButton("입력",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+//                                Toast.makeText(getApplicationContext(),edittext.getText().toString() ,Toast.LENGTH_LONG).show();
+                                if(!mDbOpenHelper_btn.is_same_btn_existed(edittext.getText().toString())){
+                                    mDbOpenHelper_btn.insertColumn_button_data(edittext.getText().toString().toString(), 100, 200, "1");
+                                    int db_button_id = mDbOpenHelper_btn.get_id_by_Name_btn_data(edittext.getText().toString().toString());
+                                    button_creation_method(db_button_id, edittext.getText().toString(), display_width/2, display_height/2);
+
+                                }else{
+                                    Toast.makeText(getApplicationContext(), "같은 이름의 데이터가 있습니다.", Toast.LENGTH_SHORT).show();
+
+                                }
+                            }
+                        });
+                builder.setNegativeButton("취소",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+                builder.show();
+
+
+
 
 
             }
         });
 
-        //버튼이름 넣고 확인 버튼 누를때
+        //버튼이름 넣고 확인 버튼 누를때->@@안쓰는 코드
         button_name_confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+
+
+
                 if(!mDbOpenHelper_btn.is_same_btn_existed(button_name_edit_text.getText().toString())){
-                    mDbOpenHelper_btn.insertColumn_button_data(button_name_edit_text.getText().toString(),100 , 200, "1");
-                    button_creation_method(button_name_edit_text.getText().toString(), display_width/2, display_height/2);
+                    mDbOpenHelper_btn.insertColumn_button_data(button_name_edit_text.getText().toString(), 100, 200, "1");
+                    int db_button_id = mDbOpenHelper_btn.get_id_by_Name_btn_data(button_name_edit_text.getText().toString());
+                    button_creation_method(db_button_id, button_name_edit_text.getText().toString(), display_width/2, display_height/2);
 
                 }else{
                     Toast.makeText(getApplicationContext(), "같은 이름의 데이터가 있습니다.", Toast.LENGTH_SHORT).show();
@@ -291,12 +332,15 @@ public class Button_allocate extends Activity{
 
 
 
-    public void button_creation_method(String btn_name, int x_location, int y_location){
-        String button_name_text = btn_name;
-        ViewGroup frame = button_creating_method2(button_ids, button_name_text ,x_location, y_location, true);
+    public void button_creation_method(int db_button_id, String btn_name, int x_location, int y_location){
+
+            String button_name_text = btn_name;
+
+            ViewGroup frame = button_creating_method2(db_button_id, button_name_text, x_location, y_location, true);
 
 
-        button_name_box.setVisibility(View.INVISIBLE);
+            button_name_box.setVisibility(View.INVISIBLE);
+
 
 
 
@@ -307,11 +351,11 @@ public class Button_allocate extends Activity{
 
 
 
-    private RelativeLayout button_creating_method2(int id_numbers, final String button_name, int location_x, int location_y, Boolean moving_hold_permanently){
+    private RelativeLayout button_creating_method2(final int id_numbers, final String button_name_method, int location_x, int location_y, Boolean moving_hold_permanently){
 
         final int this_layout_id_number = id_numbers;
 
-        LinearLayout line_two_for_setting_buttons = new LinearLayout((getApplicationContext()));
+        final LinearLayout line_two_for_setting_buttons = new LinearLayout((getApplicationContext()));
         line_two_for_setting_buttons.setOrientation(LinearLayout.VERTICAL);
 
         //line one
@@ -324,19 +368,19 @@ public class Button_allocate extends Activity{
         float text_length;
 
         if(display_height < 1000){ //HD
-            text_length = (int) (button_name.length()*buttons_height*1.5);
+            text_length = (int) (button_name_method.length()*buttons_height*1.5);
 //            new_linear.setPadding((int)(text_length/8),0,0,0);
 
         }else if(display_height < 1400){ //FHD
-            text_length = (int) (button_name.length()*buttons_height*1.5);
+            text_length = (int) (button_name_method.length()*buttons_height*1.5);
 //            new_linear.setPadding((int)(text_length/6),(button_name.length()/2),0,0);
 
         }else if(display_height < 2000){ //QHD
-            text_length = (int) (button_name.length()*buttons_height*1.3);
+            text_length = (int) (button_name_method.length()*buttons_height*1.3);
 //            new_linear.setPadding((int)(text_length/6),(button_name.length()/4),0,0);
 
         }else{ //UHD
-            text_length = (int) (button_name.length()*buttons_height*1.7);
+            text_length = (int) (button_name_method.length()*buttons_height*1.7);
 //            new_linear.setPadding((int)(text_length/6),0,0,0);
 
         }
@@ -357,12 +401,12 @@ public class Button_allocate extends Activity{
         new_buttons.setId(this_layout_id_number+10000);
         new_buttons.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         new_buttons.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.button_editing_check));
+
+        //메인 버튼 이름 누를때 기능을 wifi 로 보내기
         new_buttons.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplication(), Algorithm_dev_activity.class);
-                intent.putExtra("project_list_num", button_name);
-                startActivity(intent);
+
             }
         });
 
@@ -383,11 +427,11 @@ public class Button_allocate extends Activity{
         });
 
 
-        TextView new_texts = new TextView(getApplicationContext());
+        final TextView new_texts = new TextView(getApplicationContext());
         new_texts.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.button_allocate_back_rectangle));
         new_texts.setTextColor(Color.rgb(0,0,0));
         new_texts.setTextSize(1,text_size);
-        new_texts.setText(button_name);
+        new_texts.setText(button_name_method);
         new_texts.setId(id_numbers+30000);
 
 
@@ -414,10 +458,147 @@ public class Button_allocate extends Activity{
 
         Button name_edit = new Button(getApplicationContext());
         name_edit.setText("수정");
+        name_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                final ArrayList<String> ListItems = new ArrayList<>();
+                ListItems.add("버튼 이름 수정");
+                ListItems.add("코드 내용 수정");
+                ListItems.add("취소");
+                final CharSequence[] items =  ListItems.toArray(new String[ ListItems.size()]);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(Button_allocate.this);
+                builder.setTitle("수정 선택");
+                builder.setItems(items, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int pos) {
+
+                        String selectedText = items[pos].toString();
+                        if(pos == 0) {//버튼 이름 수정
+                            final EditText edittext = new EditText(Button_allocate.this);
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(Button_allocate.this);
+                            builder.setTitle("버튼 이름 수정");
+                            builder.setMessage("바꿀 버튼 이름을 넣어주세요. \n ※중복은 허용 안됨.");
+                            builder.setView(edittext);
+                            builder.setPositiveButton("입력",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            new_texts.setText(edittext.getText().toString());
+                                            if(!mDbOpenHelper_btn.is_same_btn_existed(edittext.getText().toString())) {
+                                                mDbOpenHelper_btn.updateColumn_btn_data(id_numbers, edittext.getText().toString(), 0, 0); //x, y위치가 0이면 그대로 유지
+                                            }else{
+                                                Toast.makeText(Button_allocate.this, "같은 이름의 데이터가 있습니다. \n 다른 이름을 넣어 주세요.", Toast.LENGTH_LONG).show();
+                                            }
+
+
+                                        }
+                                    });
+                            builder.setNegativeButton("취소",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                        }
+                                    });
+                            builder.show();
+
+                        }else if(pos == 1) { // 코드 내용 수정
+                            Intent intent = new Intent(getApplication(), Algorithm_dev_activity.class);
+                            intent.putExtra("project_list_num", button_name_method);
+                            startActivity(intent);
+
+                        }else if(pos == 2) {//취소
+                            Toast.makeText(Button_allocate.this, selectedText, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                builder.show();
+
+
+
+
+
+            }
+        });
+
+
+
         Button delete_btn = new Button(getApplicationContext());
         delete_btn.setText("삭제");
+        delete_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                AlertDialog.Builder alt_bld = new AlertDialog.Builder(Button_allocate.this);
+                alt_bld.setMessage("정말로 삭제하시겠습니까?").setCancelable(
+                        false).setPositiveButton("삭제",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // Action for 'Yes' Button
+                                mDbOpenHelper_btn.deleteColumn_btn_data(id_numbers);
+                                line_two_for_setting_buttons.removeAllViews();
+                                Toast.makeText(Button_allocate.this, "삭제됨", Toast.LENGTH_SHORT).show();
+
+                            }
+                        }).setNegativeButton("취소",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // Action for 'NO' Button
+                                dialog.cancel();
+                                Toast.makeText(Button_allocate.this, "취소", Toast.LENGTH_SHORT).show();
+
+                            }
+                        });
+                AlertDialog alert = alt_bld.create();
+                // Title for AlertDialog
+                alert.setTitle("수정 Edit");
+                // Icon for AlertDialog
+                alert.show();
+
+
+
+
+
+
+
+
+
+            }
+        });
+
         Button copy_btn = new Button(getApplicationContext());
         copy_btn.setText("복사");
+        copy_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                if(!mDbOpenHelper_btn.is_same_btn_existed(button_name_method+"_복사")){
+                    mDbOpenHelper_btn.duplicate_btn_data(button_name_method);
+                    Cursor c = mDbOpenHelper_btn.getMatchName_btn_data(button_name_method+"_복사");
+
+                    c.moveToFirst();
+                    button_creating_method2(c.getInt(c.getColumnIndex("_id")),
+                            c.getString(c.getColumnIndex("btn_name")),
+                            c.getInt(c.getColumnIndex("x")),
+                            c.getInt(c.getColumnIndex("y")),
+                            true);
+
+                }else{
+                    Toast.makeText(getApplicationContext(), "이미 복사된 버튼이 있습니다.", Toast.LENGTH_SHORT).show();
+
+                }
+
+
+
+
+
+
+
+
+            }
+        });
 
 
         line_two_setting_buttons.addView(name_edit);
@@ -539,7 +720,7 @@ public class Button_allocate extends Activity{
             );
             Log.i("class", mInfoClass_btn +"");
             mInfoArray_btn.add(mInfoClass_btn);
-            button_creation_method(mCursor_btn.getString(mCursor_btn.getColumnIndex("btn_name")), mCursor_btn.getInt(mCursor_btn.getColumnIndex("x")), mCursor_btn.getInt(mCursor_btn.getColumnIndex("y")));
+            button_creation_method(mCursor_btn.getInt(mCursor_btn.getColumnIndex("_id")), mCursor_btn.getString(mCursor_btn.getColumnIndex("btn_name")), mCursor_btn.getInt(mCursor_btn.getColumnIndex("x")), mCursor_btn.getInt(mCursor_btn.getColumnIndex("y")));
 
 
         }
@@ -547,6 +728,28 @@ public class Button_allocate extends Activity{
         mCursor_btn.close();
     }
 
+
+
+    //수정 버튼 누를때
+    void show()
+    {
+        final ArrayList<String> ListItems = new ArrayList<>();
+        ListItems.add("사과");
+        ListItems.add("배");
+        ListItems.add("귤");
+        ListItems.add("바나나");
+        final CharSequence[] items =  ListItems.toArray(new String[ ListItems.size()]);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("AlertDialog Title");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int pos) {
+                String selectedText = items[pos].toString();
+                Toast.makeText(Button_allocate.this, selectedText, Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.show();
+    }
 
 
 

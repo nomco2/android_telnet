@@ -87,6 +87,7 @@
                 android:layout_weight="0.1">
 
                 <TextView
+                    android:id="@+id/msgbox_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="생성할 버튼의 이름을 넣어주세요."/>
