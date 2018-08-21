@@ -1,11 +1,14 @@
 package com.example.kimfamily.arduino_car_nodemcu;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -99,23 +102,77 @@ public class DB_select extends Activity {
         public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
                                        int position, long arg3) {
 
-            DLog.e(TAG, "position = " + position);
+//            DLog.e(TAG, "position = " + position);
+//
+//            boolean result = mDbOpenHelper.deleteColumn(position + 1);
+//            DLog.e(TAG, "result = " + result);
+//
+//            if(result){
+//                mInfoArray.remove(position);
+//                mAdapter.setArrayList(mInfoArray);
+//                mAdapter.notifyDataSetChanged();
+//            }else {
+//                Toast.makeText(getApplicationContext(), "INDEX를 확인해 주세요.",
+//                        Toast.LENGTH_LONG).show();
+//            }
 
-            boolean result = mDbOpenHelper.deleteColumn(position + 1);
-            DLog.e(TAG, "result = " + result);
 
-            if(result){
-                mInfoArray.remove(position);
-                mAdapter.setArrayList(mInfoArray);
-                mAdapter.notifyDataSetChanged();
-            }else {
-                Toast.makeText(getApplicationContext(), "INDEX를 확인해 주세요.",
-                        Toast.LENGTH_LONG).show();
-            }
+
+            final ArrayList<String> ListItems = new ArrayList<>();
+            ListItems.add("프로젝트 이름 수정");
+            ListItems.add("프로젝트 삭제");
+            ListItems.add("프로젝트 복사");
+            ListItems.add("취소");
+            final CharSequence[] items = ListItems.toArray(new String[ListItems.size()]);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(DB_select.this);
+            builder.setTitle("프로젝트 설정");
+            builder.setItems(items, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int pos) {
+
+                    String selectedText = items[pos].toString();
+                    if (pos == 0) {//버튼 이름 수정
+                        final EditText edittext = new EditText(DB_select.this);
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(DB_select.this);
+                        builder.setTitle("버튼 이름 수정");
+                        builder.setMessage("바꿀 버튼 이름을 넣어주세요. \n ※같은 이름은 안됨.");
+                        builder.setView(edittext);
+                        builder.setPositiveButton("입력",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+
+
+                                    }
+                                });
+                        builder.setNegativeButton("취소",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                });
+                        builder.show();
+
+                    } else if (pos == 1) { // 코드 내용 수정
+
+
+                    } else if (pos == 2) {//취소
+                    }
+                }
+            });
+            builder.show();
+
+
 
             return false;
+
+
+
         }
     };
+
+
 
 
     /**

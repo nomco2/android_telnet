@@ -60,7 +60,11 @@
             android:screenOrientation="landscape"
             android:label="@string/title_activity_settings" >
         </activity>
-
+        <activity
+            android:name="algorithim_dev_classis.Algorithm_dev_activity_db"
+            android:screenOrientation="landscape"
+            android:label="@string/title_activity_settings" >
+        </activity>
 
     </application>
 
