@@ -95,6 +95,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:contentDescription=""
         android:id="@+id/id4"
         android:layout_width="match_parent"
         android:layout_height="0dp"

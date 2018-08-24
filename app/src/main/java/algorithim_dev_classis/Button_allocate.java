@@ -466,7 +466,7 @@ public class Button_allocate extends Activity {
                             builder.show();
 
                         } else if (pos == 1) { // 코드 내용 수정
-                            Intent intent = new Intent(getApplication(), Algorithm_dev_activity.class);
+                            Intent intent = new Intent(getApplication(), Algorithm_dev_activity_db.class);
                             intent.putExtra("project_name_button_name", this_project_name + button_name_method);
                             startActivity(intent);
 

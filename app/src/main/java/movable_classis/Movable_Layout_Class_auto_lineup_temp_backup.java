@@ -3,9 +3,7 @@ package movable_classis;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Message;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +12,11 @@ import android.widget.Toast;
 
 import algorithim_dev_classis.Algorithm_dev_activity;
 
-import static java.lang.Math.round;
-
 /**
  * Created by IGSksh on 2017-07-29.
  */
 
-public class Movable_Layout_Class_auto_lineup {
+public class Movable_Layout_Class_auto_lineup_temp_backup {
     public int xDelta;
     public int yDelta;
     private ViewGroup mainLayout;
@@ -56,9 +52,9 @@ public class Movable_Layout_Class_auto_lineup {
      * @param location_xy [String[]] to save the "you_want_moving_layout" of location x, y
      * @param scale_value_name the layout scale size value name : String
      */
-    public Movable_Layout_Class_auto_lineup(Context from_mainAcviticy_context, ViewGroup form_mainAcitiviy_Layout, ViewGroup you_want_moving_layout,
-                                            String[] location_xy, String scale_value_name, Boolean moving_hold_permanently,
-                                            int layout_id){
+    public Movable_Layout_Class_auto_lineup_temp_backup(Context from_mainAcviticy_context, ViewGroup form_mainAcitiviy_Layout, ViewGroup you_want_moving_layout,
+                                                        String[] location_xy, String scale_value_name, Boolean moving_hold_permanently,
+                                                        int layout_id){
         mainactivity_context = from_mainAcviticy_context;
         mainLayout = form_mainAcitiviy_Layout;
         mframe = you_want_moving_layout;
@@ -144,16 +140,16 @@ public class Movable_Layout_Class_auto_lineup {
 
 
                             //오른쪽 안쓴 거에서 가져오면, 새로 생성해 주기
-//                            boolean is_this_layout_unselected = true;
-//                            int this_layout_button_type =  ((Algorithm_dev_activity) mainactivity_context).DB_buttons[this_layout_id][0];
-//                            for(int i=0;i<((Algorithm_dev_activity) mainactivity_context).button_type_numbers; i++){
-//                                if(this_layout_id == ((Algorithm_dev_activity) mainactivity_context).unselected_buttons[i]) {
-//                                    is_this_layout_unselected = true;
-////                                    Toast.makeText(mainactivity_context,"unselected id "+this_layout_id,Toast.LENGTH_SHORT).show();
-//                                    break;
-//                                }
-//
-//                            }
+                            boolean is_this_layout_unselected = true;
+                            int this_layout_button_type =  ((Algorithm_dev_activity) mainactivity_context).DB_buttons[this_layout_id][0];
+                            for(int i=0;i<((Algorithm_dev_activity) mainactivity_context).button_type_numbers; i++){
+                                if(this_layout_id == ((Algorithm_dev_activity) mainactivity_context).unselected_buttons[i]) {
+                                    is_this_layout_unselected = true;
+//                                    Toast.makeText(mainactivity_context,"unselected id "+this_layout_id,Toast.LENGTH_SHORT).show();
+                                    break;
+                                }
+
+                            }
 
 
 //                            if(is_this_layout_unselected) {
@@ -177,7 +173,7 @@ public class Movable_Layout_Class_auto_lineup {
 
 //                            Toast.makeText(mainactivity_context,"this id:"+this_layout_id+" last id:"+((Algorithm_dev_activity) mainactivity_context).last_creating_id_number,Toast.LENGTH_SHORT).show();
 
-//                            ((Algorithm_dev_activity) mainactivity_context).arranging_algorithm_continuous_from_layout_location(this_layout_id);
+                            ((Algorithm_dev_activity) mainactivity_context).arranging_algorithm_continuous_from_layout_location(this_layout_id);
 //Toast.makeText(mainactivity_context,mframe.getX()+"",Toast.LENGTH_SHORT).show();
 
 

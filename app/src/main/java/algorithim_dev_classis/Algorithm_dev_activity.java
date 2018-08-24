@@ -35,6 +35,7 @@ import com.example.kimfamily.arduino_car_nodemcu.Main_activiy;
 import com.example.kimfamily.arduino_car_nodemcu.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import database.DbOpenHelper_algorithm;
 import database.DbOpenHelper_button;
@@ -106,6 +107,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         /*기존 db사용전 순서 정리용 변수*/
         DB_buttons = new int[4000][6]; //생성된 순서대로 id를 부여하고 버튼타입을 저장
         algorithm_continuous = new int[2000]; //id를 배치된 순서대로 넣는 배열
+        Arrays.fill(algorithm_continuous, -1); //특정 값으로 초기화
 
         /*DB 관련 변수 초기화 */
         Intent intent = getIntent();
@@ -221,6 +223,7 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 //        DB_buttons[0][2] = 10;
 //        DB_buttons[0][3] = 100;
 //        algorithm_continuous[0] = 10;
+
 
 
 
@@ -351,15 +354,10 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
         }
 
 
-
-
-
-//        layout_placement_by_next_id(DB_buttons[0][1], 10, display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY());
-                               //int algorithm_continuous_number, int pre_layout_x, int pre_layout_y
-//        layout_placement_by_next_id(0, 10, display_height - getStatusBarHeight() - (display_height - 100) - scrollview1.getScrollY());
-        layout_placement_by_next_id(0, 10, first_line_getY);
-
-//        Log.i("first_line_getY", first_line_getY+"");
+        //처음 데이터가 있으면 순서대로 불러오기
+        if(algorithm_continuous[0] > 0) {
+            layout_placement_by_next_id(0, 10, first_line_getY);
+        }
     }
 
 
@@ -409,7 +407,9 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
                     int calculation_array_num = (-first_line_getY + (int) layout1.getY()+buttons_height/2) / buttons_height;
                     push_id_next_line(touched_id, calculation_array_num - 1);
                     algorithm_continuous[calculation_array_num - 1] = touched_id;
-                    mDbOpenHelper_algorithm.updateColumn_by_layout_id(touched_id, calculation_array_num - 1);//db를 layoutid로 찾아서 업데이트 해줌
+//                    mDbOpenHelper_algorithm.updateColumn_by_layout_id(touched_id, calculation_array_num - 1);//db를 layoutid로 찾아서 업데이트 해줌
+
+
                     Log.i("algorithm_continuous", calculation_array_num - 1+ "에 id가 " + touched_id + ", button type : " + DB_buttons[touched_id][0]);
 
 
@@ -463,21 +463,23 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
             auto_lining();
 
             /*line color change */
-            int count = 0;
-            for(int i =0;  i < algorithm_continuous.length - 2; i++) {
-                //조건문 반복문 counting
-                if (DB_buttons[algorithm_continuous[i]][0] == 6 || DB_buttons[algorithm_continuous[i]][0] == 7) {
-                    count += 1;
-                }
-                changing_backline_color_if(i, count);
-                //조건문 반복문 end decounting
-                if (DB_buttons[algorithm_continuous[i]][0] == 8) {
-                    changing_backline_color_if(i, count);
-                    count -= 1;
-                }
-                if (algorithm_continuous[i] == 0)
-                    break;
-            }
+//            if(algorithm_continuous[0] > 0) {
+//            int count = 0;
+//            for (int i = 0; i < algorithm_continuous.length - 2; i++) {
+//                //조건문 반복문 counting
+//                if (DB_buttons[algorithm_continuous[i]][0] == 6 || DB_buttons[algorithm_continuous[i]][0] == 7) {
+//                    count += 1;
+//                }
+//                changing_backline_color_if(i, count);
+//                //조건문 반복문 end decounting
+//                if (DB_buttons[algorithm_continuous[i]][0] == 8) {
+//                    changing_backline_color_if(i, count);
+//                    count -= 1;
+//                }
+//                if (algorithm_continuous[i] == 0)
+//                    break;
+//            }
+//        }
 
             /* line exceed */
 
@@ -772,17 +774,16 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
 
-    public RelativeLayout button_creating_method2(int id_numbers,int button_type, int location_x, int location_y, Boolean moving_hold_permanently, int pre_button_id, String function_data){
+    public RelativeLayout button_creating_method2(int id_numbers,int button_type, int location_x, int location_y, Boolean moving_hold_permanently, int algorithm_continuous_array_num, String function_data){
 
 
-        //DB에 추가
-        mDbOpenHelper_algorithm.insertColumn_layout_id(button_type, function_data, 0, id_numbers);
 
 
-        DB_buttons[id_numbers][0] = button_type; //버튼 종류
-        DB_buttons[id_numbers][1] = 0; //다음 연속된 버튼 id
-        DB_buttons[id_numbers][2] = location_x; //x위치
-        DB_buttons[id_numbers][3] = location_y; //y위치
+
+//        DB_buttons[id_numbers][0] = button_type; //버튼 종류
+//        DB_buttons[id_numbers][1] = 0; //다음 연속된 버튼 id
+//        DB_buttons[id_numbers][2] = location_x; //x위치
+//        DB_buttons[id_numbers][3] = location_y; //y위치
 
 
 
@@ -935,6 +936,52 @@ public class Algorithm_dev_activity extends Activity implements View.OnClickList
 
 
     }
+
+
+
+    /**
+     * DB에서 받아온 값을 ArrayList에 Add
+     */
+    private void doWhileCursorToArray() {
+
+        mCursor_algorithm = null;
+        mCursor_algorithm = mDbOpenHelper_algorithm.getAllColumns_btn_data();
+
+        while (mCursor_algorithm.moveToNext()) {
+
+            mInfoClass_algorithm = new InfoClass_algorithm(
+                    mCursor_algorithm.getInt(mCursor_algorithm.getColumnIndex("_id")),
+                    mCursor_algorithm.getInt(mCursor_algorithm.getColumnIndex("function_type")),
+                    mCursor_algorithm.getString(mCursor_algorithm.getColumnIndex("function_data")),
+                    mCursor_algorithm.getInt(mCursor_algorithm.getColumnIndex("algorithm_continuous")),
+                    mCursor_algorithm.getInt(mCursor_algorithm.getColumnIndex("layout_id"))
+
+
+
+
+                    );
+            Log.i("class", mInfoClass_algorithm + "");
+            mInfoClass_algorithm_list.add(mInfoClass_algorithm);
+
+            //불러온데이터 순서 데이터 넣기
+            algorithm_continuous[mCursor_algorithm.getInt(mCursor_algorithm.getColumnIndex("algorithm_continuous"))] = mCursor_algorithm.getInt(mCursor_algorithm.getColumnIndex("layout_id"));
+            //불러온 데이터 일단 만들기
+            button_creating_method2(
+                    mCursor_algorithm.getInt(mCursor_algorithm.getColumnIndex("layout_id")),
+                    mCursor_algorithm.getInt(mCursor_algorithm.getColumnIndex("function_type")),
+                    0,0, true,
+                    mCursor_algorithm.getInt(mCursor_algorithm.getColumnIndex("algorithm_continuous")),
+                    mCursor_algorithm.getString(mCursor_algorithm.getColumnIndex("function_data"))
+                    );
+
+
+        }
+        auto_lining();
+
+        mCursor_algorithm.close();
+    }
+
+
 
 
     @Override
